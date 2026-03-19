@@ -34,30 +34,33 @@
 |Verificar que el .gitignore generado por Vite incluya: node\_modules/, dist/, .env, .env.local|
 | :- |
 
-## **1.4 Instalar y configurar Tailwind CSS**
+## **1.4 Instalar y configurar Tailwind CSS v4**
 
-|<p>npm install -D tailwindcss postcss autoprefixer</p><p>npx tailwindcss init -p</p>|
+|<p># Instalar Tailwind v4 y su plugin oficial de Vite</p><p>npm install -D tailwindcss @tailwindcss/vite</p>|
 | :- |
 
-|<p>// tailwind.config.js</p><p>export default {</p><p>`  `content: ['./index.html', './src/\*\*/\*.{js,jsx}'],</p><p>`  `theme: { extend: {} },</p><p>`  `plugins: [],</p><p>};</p>|
+|<p>// vite.config.js — añadir el plugin de Tailwind</p><p>import { defineConfig } from 'vite'</p><p>import react from '@vitejs/plugin-react'</p><p>import tailwindcss from '@tailwindcss/vite'</p><p></p><p>export default defineConfig({</p><p>`  `plugins: [</p><p>`    `react(),</p><p>`    `tailwindcss(),</p><p>`  `],</p><p>})</p>|
 | :- |
 
-|<p>/\* src/index.css — reemplazar contenido con: \*/</p><p>@tailwind base;</p><p>@tailwind components;</p><p>@tailwind utilities;</p>|
+|<p>/\* src/index.css — reemplazar TODO el contenido con esta sola línea: \*/</p><p>@import "tailwindcss";</p>|
+| :- |
+
+|No se necesita tailwind.config.js ni postcss.config.js para la configuración estándar. La detección de clases es automática.|
 | :- |
 
 ## **1.5 Instalar Supabase CLI**
 
-|<p>npm install -g supabase</p><p></p><p># Verificar instalación</p><p>supabase --version</p><p></p><p># Login con tu cuenta de Supabase</p><p>supabase login</p>|
+|<p>npm install supabase --save-dev</p><p></p><p># Verificar instalación</p><p>npx supabase --version</p><p></p><p># Login con tu cuenta de Supabase</p><p>npx supabase login</p>|
 | :- |
 
 ## **1.6 Vincular proyecto remoto y configurar migraciones**
 
-|<p># Inicializar estructura de Supabase en el proyecto</p><p>supabase init</p><p></p><p># Vincular con el proyecto remoto</p><p># El project-ref está en Supabase Dashboard → Settings → General</p><p>supabase link --project-ref <project-ref></p><p></p><p># Estructura generada:</p><p># supabase/</p><p>#   migrations/   ← aquí van los archivos SQL</p><p>#   config.toml</p>|
+|<p># Inicializar estructura de Supabase en el proyecto</p><p>npx supabase init</p><p></p><p># Vincular con el proyecto remoto</p><p># El project-ref está en Supabase Dashboard → Settings → General</p><p>npx supabase link --project-ref <project-ref></p><p></p><p># Estructura generada:</p><p># supabase/</p><p>#   migrations/   ← aquí van los archivos SQL</p><p>#   config.toml</p>|
 | :- |
 
 ## **1.7 Crear y ejecutar migraciones**
 
-|<p># Crear archivo de migración</p><p># Nombrar con timestamp para que Supabase los ejecute en orden</p><p>touch supabase/migrations/20240101000000\_initial\_schema.sql</p><p></p><p># Pegar en ese archivo todo el SQL de la sección 2 de este documento</p><p></p><p># Ejecutar migración contra el proyecto remoto</p><p>supabase db push</p><p></p><p># Verificar en Supabase Dashboard → Table Editor que las tablas existen</p>|
+|<p># Crear archivo de migración</p><p># Nombrar con timestamp para que Supabase los ejecute en orden</p><p>touch supabase/migrations/20240101000000\_initial\_schema.sql</p><p></p><p># Pegar en ese archivo todo el SQL de la sección 2 de este documento</p><p></p><p># Ejecutar migración contra el proyecto remoto</p><p>npx supabase db push</p><p></p><p># Verificar en Supabase Dashboard → Table Editor que las tablas existen</ p>|
 | :- |
 
 |supabase db push aplica todas las migraciones pendientes directamente contra el proyecto remoto. No requiere Docker ni entorno local.|
