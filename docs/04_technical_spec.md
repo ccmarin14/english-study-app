@@ -11,7 +11,7 @@
 |**Depende de**|Fase 3 — System Design / Spec|
 |**Base de datos**|PostgreSQL (Supabase)|
 |**Convención**|snake\_case|
-|**Auth**|Google OAuth únicamente (Supabase Auth)|
+|**Auth**|Selección de perfil pre-creado (Supabase Auth)|
 
 # **1. Setup del proyecto**
 ## **1.1 Requisitos previos**
@@ -19,7 +19,6 @@
 - npm >= 9.x (incluido con Node.js)
 - Supabase CLI — instalación en sección 1.4
 - Cuenta en Supabase — https://supabase.com
-- Cuenta en Google Cloud Console para OAuth — https://console.cloud.google.com
 
 ## **1.2 Crear el proyecto con Vite + React**
 
@@ -71,13 +70,14 @@
 |<p># .env.local — nunca subir a Git</p><p>VITE\_SUPABASE\_URL=https://<project-ref>.supabase.co</p><p>VITE\_SUPABASE\_ANON\_KEY=<anon-key></p><p></p><p># Obtener valores en:</p><p># Supabase Dashboard → Settings → API</p>|
 | :- |
 
-## **1.9 Configurar Google OAuth**
-- Ir a Google Cloud Console → Crear proyecto → APIs & Services → Credentials
-- Crear OAuth 2.0 Client ID → tipo: Web application
-- Añadir Authorized redirect URI: https://<project-ref>.supabase.co/auth/v1/callback
-- Copiar Client ID y Client Secret
-- En Supabase Dashboard → Authentication → Providers → Google → activar y pegar credenciales
-- Para desarrollo local añadir también: http://localhost:5173/auth/callback como redirect URI en Google Console
+## **1.9 Preparar usuarios de prueba**
+
+- Ir a Supabase Dashboard → Authentication → Users
+- Crear usuarios manualmente o mediante Invitations
+- Para cada usuario, configurar username y avatar_color en la tabla profiles
+- El admin puede usar el SQL de la sección 5 (Seeds) para crear usuarios de prueba
+
+**Nota:** El campo email en auth.users es único y se usa para identificar al usuario. No se requiere que el usuario tenga acceso al email.
 
 ## **1.10 Extensión requerida en PostgreSQL**
 
@@ -91,7 +91,7 @@
 
 ## **2.1 Profiles**
 
-|<p>CREATE TABLE profiles (</p><p>`  `id             uuid        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,</p><p>`  `username       text        NOT NULL UNIQUE,</p><p>`  `avatar\_color   text        NOT NULL DEFAULT '#4F46E5',</p><p>`  `created\_at     timestamptz NOT NULL DEFAULT now()</p><p>);</p><p></p><p>-- Trigger: crear perfil automáticamente al registrarse</p><p>-- El nombre viene de Google OAuth: raw\_user\_meta\_data->>'full\_name'</p><p>CREATE OR REPLACE FUNCTION handle\_new\_user()</p><p>RETURNS trigger AS $</p><p>BEGIN</p><p>`  `INSERT INTO profiles (id, username, avatar\_color)</p><p>`  `VALUES (</p><p>`    `NEW.id,</p><p>`    `COALESCE(</p><p>`      `NEW.raw\_user\_meta\_data->>'full\_name',</p><p>`      `NEW.raw\_user\_meta\_data->>'name',</p><p>`      `split\_part(NEW.email, '@', 1)</p><p>`    `),</p><p>`    `'#4F46E5'</p><p>`  `);</p><p>`  `RETURN NEW;</p><p>END;</p><p>$ LANGUAGE plpgsql SECURITY DEFINER;</p><p></p><p>CREATE TRIGGER on\_auth\_user\_created</p><p>`  `AFTER INSERT ON auth.users</p><p>`  `FOR EACH ROW EXECUTE FUNCTION handle\_new\_user();</p>|
+|<p>CREATE TABLE profiles (</p><p>`  `id             uuid        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,</p><p>`  `username       text        NOT NULL UNIQUE,</p><p>`  `avatar\_color   text        NOT NULL DEFAULT '#4F46E5',</p><p>`  `created\_at     timestamptz NOT NULL DEFAULT now()</p><p>);</p><p></p><p>-- Trigger: crear perfil automáticamente al crear usuario</p><p>-- El username se genera del email si no se especifica</p><p>CREATE OR REPLACE FUNCTION handle\_new\_user()</p><p>RETURNS trigger AS $</p><p>BEGIN</p><p>`  `INSERT INTO profiles (id, username, avatar\_color)</p><p>`  `VALUES (</p><p>`    `NEW.id,</p><p>`    `COALESCE(</p><p>`      `NEW.raw\_user\_meta\_data->>'full\_name',</p><p>`      `NEW.raw\_user\_meta\_data->>'name',</p><p>`      `split\_part(NEW.email, '@', 1)</p><p>`    `),</p><p>`    `'#4F46E5'</p><p>`  `);</p><p>`  `RETURN NEW;</p><p>END;</p><p>$ LANGUAGE plpgsql SECURITY DEFINER;</p><p></p><p>CREATE TRIGGER on\_auth\_user\_created</p><p>`  `AFTER INSERT ON auth.users</p><p>`  `FOR EACH ROW EXECUTE FUNCTION handle\_new\_user();</p>|
 | :- |
 
 ## **2.2 Words y Word Translations**
@@ -266,7 +266,7 @@
 
 # **5. Seeds de desarrollo**
 
-|Insertar después de crear al menos un usuario desde el cliente. Reemplazar los UUIDs de ejemplo con los reales del auth.users.|
+|Insertar después de crear usuarios desde Supabase Dashboard. Reemplazar los UUIDs de ejemplo con los reales del auth.users.|
 | :- |
 
 ## **5.1 Palabras de ejemplo**
@@ -290,9 +290,9 @@
 |<p>// lib/supabase.js</p><p>import { createClient } from '@supabase/supabase-js';</p><p></p><p>export const supabase = createClient(</p><p>`  `import.meta.env.VITE\_SUPABASE\_URL,</p><p>`  `import.meta.env.VITE\_SUPABASE\_ANON\_KEY</p><p>);</p>|
 | :- |
 
-## **6.2 Autenticación con Google OAuth**
+## **6.2 Autenticación con Magic Link (signInWithOtp)**
 
-|<p>// Login con Google</p><p>await supabase.auth.signInWithOAuth({</p><p>`  `provider: 'google',</p><p>`  `options: {</p><p>`    `redirectTo: window.location.origin + '/auth/callback'</p><p>`  `}</p><p>});</p><p></p><p>// Callback — src/pages/AuthCallback.jsx</p><p>// Supabase maneja el token automáticamente al regresar de Google</p><p>// Solo redirigir al dashboard si hay sesión activa:</p><p>const { data: { session } } = await supabase.auth.getSession();</p><p>if (session) navigate('/dashboard');</p><p>else navigate('/login');</p><p></p><p>// Cerrar sesión</p><p>await supabase.auth.signOut();</p>|
+|<p>// src/pages/Login.jsx — Solicitar enlace mágico</p><p>// El usuario ingresa su email y recibe un enlace para iniciar sesión</p><p>await supabase.auth.signInWithOtp({</p><p>`  `email: userEmail,</p><p>`  `options: {</p><p>`    `emailRedirectTo: window.location.origin + '/auth/callback'</p><p>`  `}</p><p>});</p><p></p><p>// src/pages/AuthCallback.jsx — Manejar el callback</p><p>// Supabase procesa el token y crea la sesión automáticamente</p><p>const { data: { session } } = await supabase.auth.getSession();</p><p>if (session) navigate('/dashboard');</p><p>else navigate('/login');</p><p></p><p>// Cerrar sesión</p><p>await supabase.auth.signOut();</p>|
 | :- |
 
 ## **6.3 Manejo de errores**

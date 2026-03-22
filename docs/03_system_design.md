@@ -12,17 +12,19 @@
 
 # **1. Arquitectura general**
 
-|<p>Frontend          React + Vite</p><p>Estilos           Tailwind CSS</p><p>Base de datos     Supabase — PostgreSQL</p><p>Autenticación     Supabase Auth</p><p>Seguridad         Row Level Security (RLS) en todas las tablas</p><p>Configuración     Variables de entorno .env (VITE\_SUPABASE\_URL, VITE\_SUPABASE\_ANON\_KEY)</p>|
+|<p>Frontend          React + Vite</p><p>Estilos           Tailwind CSS</p><p>Base de datos     Supabase — PostgreSQL</p><p>Autenticación     Supabase Auth (usuarios pre-creados por admin)</p><p>Seguridad         Row Level Security (RLS) en todas las tablas</p><p>Configuración     Variables de entorno .env (VITE\_SUPABASE\_URL, VITE\_SUPABASE\_ANON\_KEY)</p>|
 | :- |
 
-La app es un SPA (Single Page Application). Todo el estado de sesión de práctica grupal se persiste en Supabase — no se necesita WebSockets porque la mecánica es asíncrona. Los clientes consultan el estado actual al entrar a cada paso.
+La app es un SPA (Single Page Application). Los usuarios son creados y gestionados por un administrador desde Supabase Dashboard. Los usuarios finales solo seleccionan su perfil para iniciar sesión.
+
+Todo el estado de sesión de práctica grupal se persiste en Supabase — no se necesita WebSockets porque la mecánica es asíncrona. Los clientes consultan el estado actual al entrar a cada paso.
 
 # **2. Modelo de datos**
 Todas las tablas incluyen RLS. Las claves primarias son UUID generados por Supabase.
 
 ## **2.1 Usuarios**
 
-|<p>profiles</p><p>`  `id               uuid  PK  (references auth.users)</p><p>`  `username         text  NOT NULL UNIQUE</p><p>`  `avatar\_color     text  NOT NULL</p><p>`  `created\_at       timestamptz DEFAULT now()</p>|
+|<p>profiles</p><p>`  `id               uuid  PK  (references auth.users)</p><p>`  `username         text  NOT NULL UNIQUE</p><p>`  `avatar\_color     text  NOT NULL</p><p>`  `created\_at       timestamptz DEFAULT now()</p><p></p><p>**Flujo de autenticación:**</p><p>1. Admin crea usuarios en Supabase Dashboard → Authentication → Users</p><p>2. Admin configura username y avatar_color en tabla profiles</p><p>3. Usuario accede a la app e ingresa su email</p><p>4. La app usa signInWithOtp para enviar enlace mágico (magic link) al email</p><p>5. Usuario hace clic en el enlace y accede automáticamente a la app</p><p>6. El admin proporciona a cada usuario su email de acceso</p>|
 | :- |
 
 ## **2.2 Banco de palabras personal**

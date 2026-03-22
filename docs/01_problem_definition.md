@@ -44,7 +44,7 @@ Un único tipo de usuario con dos contextos posibles de uso:
 |**Contexto**|**Descripción**|**Necesidad principal**|
 | :- | :- | :- |
 |**Individual**|Usa la app de forma autónoma, sin pertenecer a ningún grupo|Gestionar su banco y practicar a su ritmo|
-|**Grupal**|Pertenece a uno o más grupos, comparte y descarga contenido|Enriquecer su banco y practicar con otros|
+|**Grupal**|Pertenece a un grupo a la vez, comparte y descarga contenido|Enriquecer su banco y practicar con otros|
 
 # **4. Solución propuesta**
 Una aplicación web con registro de usuarios que permite practicar vocabulario en inglés mediante técnicas de aprendizaje activo, con progreso individual medible y un sistema opcional de grupos para compartir contenido y realizar sesiones de práctica interactivas.
@@ -53,7 +53,7 @@ Una aplicación web con registro de usuarios que permite practicar vocabulario e
 | :- |
 
 # **5. Criterios de éxito del MVP**
-- Un usuario puede registrarse, crear palabras y practicarlas sin pertenecer a ningún grupo
+- Un usuario (creado por admin) puede acceder, crear palabras y practicarlas sin pertenecer a ningún grupo
 - El sistema selecciona palabras por probabilidad ponderada inversamente al nivel de dominio
 - El progreso evoluciona correctamente: sube con 2 aciertos consecutivos, baja con 1 fallo
 - Un usuario puede crear un grupo, exportar palabras y otros pueden unirse y descargar el contenido
@@ -65,7 +65,7 @@ Una aplicación web con registro de usuarios que permite practicar vocabulario e
 
 # **6. Fuera del alcance del MVP**
 - Audio y pronunciación (Text-to-Speech)
-- Importación de palabras desde CSV o archivos externos
+- Importación de palabras desde CSV (la importación Excel sí está en el MVP)
 - Notificaciones push o recordatorios por email
 - Categorías o etiquetas temáticas para el banco de palabras
 - Sesiones grupales en tiempo real simultáneo

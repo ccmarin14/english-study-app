@@ -18,9 +18,9 @@
 # **F-01 · Autenticación**
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
-| :- | :- | :-: | :-: |
-|**Login con Google**|El botón redirige a Google, el usuario autoriza y regresa a la app con sesión activa|☐ OK  ☐ Falla||
-|**Perfil creado automáticamente**|Tras el primer login, existe un registro en profiles con el nombre de Google y avatar\_color por defecto|☐ OK  ☐ Falla||
+| :- | :- | :-: | :- |
+|**Acceso con magic link**|El usuario ingresa su email, recibe enlace por correo y accede a la app|☐ OK  ☐ Falla||
+|**Usuario pre-creado por admin**|El perfil ya existe en profiles, creado por el administrador|☐ OK  ☐ Falla||
 |**Sesión persistente**|Al cerrar y reabrir el navegador, el usuario sigue autenticado|☐ OK  ☐ Falla||
 |**Cierre de sesión**|Al hacer logout, la sesión se elimina y se redirige al login|☐ OK  ☐ Falla||
 |**Rutas protegidas**|Acceder a /dashboard sin sesión redirige al login automáticamente|☐ OK  ☐ Falla||

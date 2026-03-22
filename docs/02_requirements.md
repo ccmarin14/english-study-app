@@ -12,9 +12,11 @@
 
 # **1. Requerimientos Funcionales**
 ## **RF-01 · Autenticación**
-- El usuario puede registrarse con email y contraseña
-- El usuario puede iniciar y cerrar sesión
-- El usuario tiene un perfil con nombre de usuario y color de avatar
+- Los usuarios son creados por un administrador desde Supabase Dashboard
+- Cada usuario tiene un perfil con nombre de usuario (username) y color de avatar
+- Los usuarios acceden ingresando su email y recibiendo un enlace de acceso (magic link)
+- El usuario puede cerrar sesión y volver a iniciar con otro email
+- No existe registro público ni login con contraseña — acceso controlado por admin
 
 ## **RF-02 · Banco de palabras personal**
 - Cada usuario tiene su propio banco de palabras
@@ -22,7 +24,7 @@
 - Una palabra tiene una o varias traducciones al español
 - Cada traducción tiene: texto en español, frase de ejemplo en inglés, frase de ejemplo en español, y explicación de contexto de uso
 - El usuario puede crear, editar y archivar palabras de su banco
-- Al crear una palabra, el usuario puede elegir exportarla a uno o más de sus grupos
+- Al crear una palabra, el usuario puede elegir exportarla a su grupo (si pertenece a uno)
 
 ## **RF-03 · Banco de frases personal**
 - Cada usuario tiene su propio banco de frases
@@ -195,7 +197,8 @@ Un solo dispositivo compartido. Un conductor maneja el teclado durante toda la s
 - Credenciales gestionadas mediante variables de entorno (.env)
 
 ## **RNF-02 · Acceso y seguridad**
-- Toda la aplicación requiere autenticación
+- Toda la aplicación requiere autenticación mediante Supabase Auth
+- Los usuarios son creados y gestionados por un administrador en Supabase Dashboard
 - Los datos de cada usuario están aislados mediante Row Level Security en Supabase
 - Un usuario solo puede ver el contenido de grupos a los que pertenece
 
@@ -213,7 +216,7 @@ Un solo dispositivo compartido. Un conductor maneja el teclado durante toda la s
 
 |**ID**|**Nombre**|**Contenido principal**|
 | :- | :- | :- |
-|**P-01**|Login / Register|Formulario de registro e inicio de sesión|
+|**P-01**|Login / Selector de perfil|Lista de usuarios disponibles para selección de sesión|
 |**P-02**|Dashboard|Palabras pendientes, progreso personal, acceso a grupos|
 |**P-03**|Banco personal|Lista de palabras y frases con filtros; añadir y editar|
 |**P-04**|Grupos|Crear grupo, unirse con código, ver catálogo y progreso de miembros|
