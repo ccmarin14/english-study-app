@@ -22,6 +22,12 @@ export default function Login() {
     setLoading(true);
     setMessage({ type: '', content: '' });
 
+    if (!email || !password) {
+      setMessage({ type: 'error', content: 'Email y contraseña son requeridos' });
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await signInWithPassword(email, password);
 
     if (error) {
@@ -66,8 +72,10 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onInput={(e) => setPassword(e.target.value)}
               placeholder="Tu contraseña"
               required
+              autoComplete="current-password"
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>

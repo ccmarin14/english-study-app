@@ -68,7 +68,7 @@ export function useGroups() {
     const { data: groupData, error: groupError } = await supabase
       .from('groups')
       .select('*')
-      .eq('invite_code', inviteCode)
+      .ilike('invite_code', inviteCode)
       .single();
 
     if (groupError) return { error: 'Código de invitación no válido' };

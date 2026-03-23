@@ -57,7 +57,7 @@ export default function Groups() {
       return;
     }
 
-    const { error } = await joinGroup(joinCode.trim().toUpperCase());
+    const { error } = await joinGroup(joinCode.trim().toLowerCase());
     if (error) {
       setError(error);
     } else {
