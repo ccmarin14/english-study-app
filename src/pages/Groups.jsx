@@ -18,6 +18,7 @@ export default function Groups() {
 
   const [showCreate, setShowCreate] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [newGroupWords, setNewGroupWords] = useState(10);
   const [joinCode, setJoinCode] = useState('');
@@ -69,9 +70,13 @@ export default function Groups() {
 
   const handleLeave = async () => {
     if (!currentGroup) return;
+    setShowLeaveConfirm(true);
+  };
 
-    if (confirm('¿Estás seguro de abandonar este grupo?')) {
+  const confirmLeave = async () => {
+    if (currentGroup) {
       await leaveGroup(currentGroup.id);
+      setShowLeaveConfirm(false);
     }
   };
 
@@ -89,27 +94,50 @@ export default function Groups() {
 
   return (
     <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Grupos</h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => setShowJoin(true)}
-              className="px-4 py-2 text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
-            >
-              Unirse a grupo
-            </button>
-            <button
-              onClick={() => setShowCreate(true)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-            >
-              Crear grupo
-            </button>
+      {showLeaveConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold mb-4">¿Abandonar el grupo?</h3>
+            <p className="text-gray-600 mb-4">Perderás acceso al grupo y sus palabras grupales.</p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowLeaveConfirm(false)}
+                className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmLeave}
+                className="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Abandonar
+              </button>
+            </div>
           </div>
         </div>
+      )}
 
-        {error && (
-          <div className="bg-red-50 text-red-700 p-4 rounded-lg">{error}</div>
-        )}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Grupos</h1>
+        <div className="flex gap-4">
+          <button
+            onClick={() => setShowJoin(true)}
+            className="px-4 py-2 text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+          >
+            Unirse a grupo
+          </button>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            Crear grupo
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-700 p-4 rounded-lg">{error}</div>
+      )}
 
         {success && (
           <div className="bg-green-50 text-green-700 p-4 rounded-lg">{success}</div>

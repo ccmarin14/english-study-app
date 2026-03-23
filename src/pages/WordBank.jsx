@@ -6,6 +6,7 @@ import WordCard from '../components/WordCard';
 export default function WordBank() {
   const { words, loading, archiveWord } = useWords();
   const [search, setSearch] = useState('');
+  const [confirmArchive, setConfirmArchive] = useState(null);
   const navigate = useNavigate();
 
   const filteredWords = words.filter(word =>
@@ -16,8 +17,13 @@ export default function WordBank() {
   );
 
   const handleArchive = async (wordId) => {
-    if (confirm('¿Archivar esta palabra?')) {
-      await archiveWord(wordId);
+    setConfirmArchive(wordId);
+  };
+
+  const confirmArchiveWord = async () => {
+    if (confirmArchive) {
+      await archiveWord(confirmArchive);
+      setConfirmArchive(null);
     }
   };
 
@@ -35,63 +41,86 @@ export default function WordBank() {
 
   return (
     <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Banco de Palabras</h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => navigate('/import')}
-              className="px-4 py-2 text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
-            >
-              📥 Importar Excel
-            </button>
+      {confirmArchive && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold mb-4">¿Archivar esta palabra?</h3>
+            <p className="text-gray-600 mb-4">La palabra se moverá al archivo y no aparecerá en la práctica.</p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setConfirmArchive(null)}
+                className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmArchiveWord}
+                className="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Archivar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Banco de Palabras</h1>
+        <div className="flex gap-4">
+          <button
+            onClick={() => navigate('/import')}
+            className="px-4 py-2 text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+          >
+            📥 Importar Excel
+          </button>
+          <button
+            onClick={() => navigate('/add-word')}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            ➕ Añadir palabra
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <input
+          type="text"
+          placeholder="Buscar palabra o traducción..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        />
+      </div>
+
+      {filteredWords.length === 0 ? (
+        <div className="text-center py-12 text-gray-500">
+          <p className="text-lg">
+            {words.length === 0
+              ? 'No tienes palabras en tu banco'
+              : 'No se encontraron palabras'}
+          </p>
+          {words.length === 0 && (
             <button
               onClick={() => navigate('/add-word')}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="mt-4 text-indigo-600 hover:text-indigo-700"
             >
-              ➕ Añadir palabra
+              Añadir tu primera palabra →
             </button>
-          </div>
+          )}
         </div>
-
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <input
-            type="text"
-            placeholder="Buscar palabra o traducción..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredWords.map((word) => (
+            <WordCard
+              key={word.id}
+              word={word}
+              onClick={() => handleWordClick(word)}
+              onArchive={() => handleArchive(word.id)}
+              showProgress
+            />
+          ))}
         </div>
-
-        {filteredWords.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <p className="text-lg">
-              {words.length === 0
-                ? 'No tienes palabras en tu banco'
-                : 'No se encontraron palabras'}
-            </p>
-            {words.length === 0 && (
-              <button
-                onClick={() => navigate('/add-word')}
-                className="mt-4 text-indigo-600 hover:text-indigo-700"
-              >
-                Añadir tu primera palabra →
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredWords.map((word) => (
-              <WordCard
-                key={word.id}
-                word={word}
-                onClick={() => handleWordClick(word)}
-                onArchive={handleArchive}
-                showProgress
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      )}
+    </div>
   );
 }
