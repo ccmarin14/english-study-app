@@ -38,6 +38,10 @@ export function useGroups() {
   }
 
   async function createGroup(name, wordsPerSession = 10) {
+    if (!user?.id) {
+      return { error: 'User not authenticated' };
+    }
+    
     const { data, error } = await supabase
       .from('groups')
       .insert({

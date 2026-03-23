@@ -115,6 +115,11 @@ export function usePractice() {
     }
 
     await fetchWordsForPractice();
+    
+    const updatedWord = words.find(w => w.id === currentWord.id);
+    if (updatedWord) {
+      setCurrentWord(updatedWord);
+    }
   }
 
   function calcNewProgress(current, isCorrect) {
