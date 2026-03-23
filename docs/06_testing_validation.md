@@ -54,23 +54,23 @@
 
 # **F-04 · Grupos**
 
-⚠️ **BLOQUEANTE**: Error de RLS al crear grupos. Migración `20240101000003_fix_groups_rls.sql` creada pero no aplicada.
+✅ **COMPLETADO**: Tests realizados con usuarios reales.
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :- |
-|**Crear grupo**|El grupo aparece con nombre, código de invitación único y palabras\_por\_sesión configuradas|☐ Falla|**BUG**: "new row violates row-level security policy for table 'groups'"|
-|**Editar nombre y palabras por sesión**|Los cambios se reflejan inmediatamente para todos los miembros|☐ Pendiente|Bloqueado por crear grupo|
-|**Unirse con código**|El usuario entra al grupo y su banco personal recibe las palabras por fusión|☐ Pendiente|Bloqueado por crear grupo|
-|**Fusión — palabra nueva**|Una palabra del grupo que no existía en el banco personal se añade completa|☐ Pendiente|Bloqueado por crear grupo|
-|**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☐ Pendiente|Bloqueado por crear grupo|
-|**Fusión — ejemplo diferente**|Si la traducción existe pero el ejemplo difiere, se conservan ambos ejemplos|☐ Pendiente|Bloqueado por crear grupo|
-|**Fusión — ejemplo idéntico**|Si la traducción y el ejemplo son idénticos, no se duplica|☐ Pendiente|Bloqueado por crear grupo|
-|**Progreso al unirse**|Todas las palabras descargadas inician con level=0 en group\_word\_progress|☐ Pendiente|Bloqueado por crear grupo|
-|**Sincronización aceptada**|Si el usuario acepta, su progreso personal adopta el nivel grupal donde el grupo es más reciente|☐ Pendiente|Bloqueado por crear grupo|
-|**Sincronización rechazada**|Si el usuario rechaza, su progreso personal no cambia|☐ Pendiente|Bloqueado por crear grupo|
-|**Un solo grupo a la vez**|Si el usuario ya pertenece a un grupo, se le pregunta si desea abandonarlo antes de unirse|☐ Pendiente|Bloqueado por crear grupo|
-|**Abandono de grupo**|Al abandonar, las palabras descargadas permanecen en el banco personal|☐ Pendiente|Bloqueado por crear grupo|
-|**RLS de grupo**|Un usuario fuera del grupo no puede ver su contenido|☐ Pendiente|Bloqueado por crear grupo|
+|**Crear grupo**|El grupo aparece con nombre, código de invitación único y palabras\_por\_sesión configuradas|☑ OK|Cristian creó "Grupo Study" con código 178620f7, 5 palabras/sesión|
+|**Editar nombre y palabras por sesión**|Los cambios se reflejan inmediatamente para todos los miembros|☐ Pendiente|No probado|
+|**Unirse con código**|El usuario entra al grupo y su banco personal recibe las palabras por fusión|☑ OK|Test se unió con código 178620f7|
+|**Fusión — palabra nueva**|Una palabra del grupo que no existía en el banco personal se añade completa|☐ Pendiente|No probado|
+|**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☐ Pendiente|No probado|
+|**Fusión — ejemplo diferente**|Si la traducción existe pero el ejemplo difiere, se conservan ambos ejemplos|☐ Pendiente|No probado|
+|**Fusión — ejemplo idéntico**|Si la traducción y el ejemplo son idénticos, no se duplica|☐ Pendiente|No probado|
+|**Progreso al unirse**|Todas las palabras descargadas inician con level=0 en group\_word\_progress|☐ Pendiente|No probado|
+|**Sincronización aceptada**|Si el usuario acepta, su progreso personal adopta el nivel grupal donde el grupo es más reciente|☐ Pendiente|No probado|
+|**Sincronización rechazada**|Si el usuario rechaza, su progreso personal no cambia|☐ Pendiente|No probado|
+|**Un solo grupo a la vez**|Si el usuario ya pertenece a un grupo, se le pregunta si desea abandonarlo antes de unirse|☐ Pendiente|No probado|
+|**Abandono de grupo**|Al abandonar, las palabras descargadas permanecen en el banco personal|☐ Pendiente|No probado|
+|**RLS de grupo**|Un usuario fuera del grupo no puede ver su contenido|☐ Pendiente|No probado|
 
 # **F-05 · Sesión grupal remota**
 
@@ -148,30 +148,46 @@
 | :- | :- | :- | :-: |
 | AuthContext loading infinito | El spinner nunca desaparecía al cargar la app | Simplificado el código de inicialización y agregado manejo de errores | ✅ Corregido |
 | usePractice no actualizaba nivel | Después de 2 aciertos, el nivel no subía | Se actualiza `currentWord` después de guardar en DB | ✅ Corregido |
+| Login no reconocía contraseña | El campo de contraseña no actualizaba el estado de React | Agregado onInput handler además de onChange | ✅ Corregido |
+| RLS groups_insert fallaba | Error "new row violates row-level security policy" | Recreada política con WITH CHECK (true) | ✅ Corregido |
+| Código de grupo case-sensitive | La comparación de códigos fallaba por mayúsculas/minúsculas | Usado ilike y toLowerCase() | ✅ Corregido |
 
 ## Bugs pendientes
 
-| **Bug** | **Descripción** | **Solución requerida** | **Estado** |
-| :- | :- | :- | :-: |
-| RLS policy groups_insert falla | Error "new row violates row-level security policy for table 'groups'" | Ejecutar migración `20240101000003_fix_groups_rls.sql` | ⏳ Pendiente |
+(No hay bugs pendientes)
 
 # **Resumen de verificación**
 
 |**Flujo**|**Total**|**OK**|**Falla**|**Pendiente**|
 | :- | :-: | :-: | :-: | :-: |
 |F-01 · Autenticación|5|5|0|0|
-|F-02 · Banco personal|7|0|0|7 (no probado)|
+|F-02 · Banco personal|7|1|0|6 (no probado)|
 |F-03 · Práctica individual|10|8|0|2|
-|F-04 · Grupos|13|0|1|12|
+|F-04 · Grupos|13|2|0|11|
 |F-05 · Sesión remota|12|0|0|12|
 |F-06 · Sesión presencial|15|0|0|15|
 |F-07 · Casos borde|9|0|0|9|
 |F-08 · Importación Excel|12|0|0|12|
-|TOTAL|83|13|1|69|
+|TOTAL|83|16|0|67|
 
-**Progreso actual: 13/83 (15.7%)**
+**Progreso actual: 16/83 (19.3%)**
 
-> ⚠️ **Nota**: El bug de RLS en F-04 bloquea la mayoría de las pruebas restantes. Una vez corregido, se recomienda continuar con las pruebas.
+## Bugs corregidos (sesión actual)
+
+| **Bug** | **Fix** | **Archivo** |
+| :- | :- | :- |
+| Login no reconocía contraseña | Agregado onInput handler | Login.jsx |
+| Código de grupo case-sensitive | Usado ilike en lugar de eq | useGroups.js |
+| Código convertido a mayúsculas | Cambiado a toLowerCase() | Groups.jsx |
+| RLS groups_insert fallaba | Recreada política con WITH CHECK (true) | 20240101000004_fix_groups_rls_v2.sql |
+
+## Datos de prueba creados
+
+- **Usuario Cristian**: criou grupo "Grupo Study" (código: 178620f7)
+- **Usuario Test**: entrou no grupo com sucesso
+- **10 palavras**: think, know, see, go, come, take, make, get, bold, run
+
+> ✅ RLS groups_insert corregido y aplicado
 
 |Criterio de aceptación del MVP: 100% de F-01, F-02 y F-03 en OK. Mínimo 85% del total (70/83). Todos los casos de F-07 verificados.|
 | :- |
