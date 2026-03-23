@@ -24,7 +24,7 @@ Todas las tablas incluyen RLS. Las claves primarias son UUID generados por Supab
 
 ## **2.1 Usuarios**
 
-|<p>profiles</p><p>`  `id               uuid  PK  (references auth.users)</p><p>`  `username         text  NOT NULL UNIQUE</p><p>`  `avatar\_color     text  NOT NULL</p><p>`  `created\_at       timestamptz DEFAULT now()</p><p></p><p>**Flujo de autenticación:**</p><p>1. Admin crea usuarios en Supabase Dashboard → Authentication → Users</p><p>2. Admin configura username y avatar_color en tabla profiles</p><p>3. Usuario accede a la app e ingresa su email</p><p>4. La app usa signInWithOtp para enviar enlace mágico (magic link) al email</p><p>5. Usuario hace clic en el enlace y accede automáticamente a la app</p><p>6. El admin proporciona a cada usuario su email de acceso</p>|
+|<p>profiles</p><p>`  `id               uuid  PK  (references auth.users)</p><p>`  `username         text  NOT NULL UNIQUE</p><p>`  `avatar\_color     text  NOT NULL</p><p>`  `created\_at       timestamptz DEFAULT now()</p><p></p><p>**Flujo de autenticación:**</p><p>1. Admin crea usuarios en Supabase Dashboard → Authentication → Users (con email y password)</p><p>2. Admin configura username y avatar_color en tabla profiles</p><p>3. Usuario ingresa su email y contraseña</p><p>4. La app usa signInWithPassword para autenticar</p><p>5. Sesión persiste automáticamente hasta que el usuario cierre sesión</p><p>6. El admin proporciona a cada usuario sus credenciales de acceso</p>|
 | :- |
 
 ## **2.2 Banco de palabras personal**

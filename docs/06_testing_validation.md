@@ -19,7 +19,7 @@
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :- |
-|**Acceso con magic link**|El usuario ingresa su email, recibe enlace por correo y accede a la app|☐ OK  ☐ Falla||
+|**Login con email y contraseña**|El usuario ingresa email y contraseña, y accede a la app|☐ OK  ☐ Falla||
 |**Usuario pre-creado por admin**|El perfil ya existe en profiles, creado por el administrador|☐ OK  ☐ Falla||
 |**Sesión persistente**|Al cerrar y reabrir el navegador, el usuario sigue autenticado|☐ OK  ☐ Falla||
 |**Cierre de sesión**|Al hacer logout, la sesión se elimina y se redirige al login|☐ OK  ☐ Falla||

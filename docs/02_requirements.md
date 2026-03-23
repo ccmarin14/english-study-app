@@ -14,9 +14,10 @@
 ## **RF-01 · Autenticación**
 - Los usuarios son creados por un administrador desde Supabase Dashboard
 - Cada usuario tiene un perfil con nombre de usuario (username) y color de avatar
-- Los usuarios acceden ingresando su email y recibiendo un enlace de acceso (magic link)
-- El usuario puede cerrar sesión y volver a iniciar con otro email
-- No existe registro público ni login con contraseña — acceso controlado por admin
+- Los usuarios acceden ingresando su email y contraseña
+- La sesión es persistente: no requiere re-autenticación hasta cerrar sesión
+- El username en login es el email del usuario (el username visible en la UI se configura aparte)
+- El usuario puede cerrar sesión y volver a iniciar con otra cuenta
 
 ## **RF-02 · Banco de palabras personal**
 - Cada usuario tiene su propio banco de palabras

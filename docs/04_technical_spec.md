@@ -290,9 +290,9 @@
 |<p>// lib/supabase.js</p><p>import { createClient } from '@supabase/supabase-js';</p><p></p><p>export const supabase = createClient(</p><p>`  `import.meta.env.VITE\_SUPABASE\_URL,</p><p>`  `import.meta.env.VITE\_SUPABASE\_ANON\_KEY</p><p>);</p>|
 | :- |
 
-## **6.2 Autenticación con Magic Link (signInWithOtp)**
+## **6.2 Autenticación con Email y Contraseña**
 
-|<p>// src/pages/Login.jsx — Solicitar enlace mágico</p><p>// El usuario ingresa su email y recibe un enlace para iniciar sesión</p><p>await supabase.auth.signInWithOtp({</p><p>`  `email: userEmail,</p><p>`  `options: {</p><p>`    `emailRedirectTo: window.location.origin + '/auth/callback'</p><p>`  `}</p><p>});</p><p></p><p>// src/pages/AuthCallback.jsx — Manejar el callback</p><p>// Supabase procesa el token y crea la sesión automáticamente</p><p>const { data: { session } } = await supabase.auth.getSession();</p><p>if (session) navigate('/dashboard');</p><p>else navigate('/login');</p><p></p><p>// Cerrar sesión</p><p>await supabase.auth.signOut();</p>|
+|<p>// src/pages/Login.jsx — Iniciar sesión con email y contraseña</p><p>await supabase.auth.signInWithPassword({</p><p>`  `email: userEmail,</p><p>`  `password: userPassword</p><p>});</p><p></p><p>// La sesión se mantiene automáticamente</p><p>// El estado de sesión se verifica con getSession() en AuthContext</p><p></p><p>// Cerrar sesión</p><p>await supabase.auth.signOut();</p>|
 | :- |
 
 ## **6.3 Manejo de errores**

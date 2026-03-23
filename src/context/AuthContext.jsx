@@ -48,12 +48,10 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }
 
-  async function signInWithOtp(email) {
-    return supabase.auth.signInWithOtp({
+  async function signInWithPassword(email, password) {
+    return supabase.auth.signInWithPassword({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
+      password,
     });
   }
 
@@ -65,7 +63,7 @@ export function AuthProvider({ children }) {
     user,
     profile,
     loading,
-    signInWithOtp,
+    signInWithPassword,
     signOut,
     isAuthenticated: !!user,
   };

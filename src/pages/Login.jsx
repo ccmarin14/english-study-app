@@ -1,30 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', content: '' });
-  const { signInWithOtp } = useAuth();
+  const { signInWithPassword } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('savedEmail');
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
     setMessage({ type: '', content: '' });
 
-    const { data, error } = await signInWithOtp(email);
+    const { data, error } = await signInWithPassword(email, password);
 
     if (error) {
       setMessage({ type: 'error', content: error.message });
       setLoading(false);
     } else {
-      setMessage({
-        type: 'success',
-        content: 'Revisa tu correo electrónico para el enlace de acceso.',
-      });
-      setLoading(false);
+      localStorage.setItem('savedEmail', email);
+      navigate('/dashboard');
     }
   }
 
@@ -52,6 +57,21 @@ export default function Login() {
             />
           </div>
 
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Tu contraseña"
+              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
           {message.content && (
             <div
               className={`p-3 rounded-md text-sm ${
@@ -67,14 +87,14 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Enviando...' : 'Enviar enlace de acceso'}
+            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-500">
-          Ingresa tu correo para recibir un enlace mágico de acceso.
+          Ingresa las credenciales proporcionadas por el administrador.
         </p>
       </div>
     </div>
