@@ -146,11 +146,13 @@
 
 | **Bug** | **Descripción** | **Fix** | **Estado** |
 | :- | :- | :- | :-: |
-| AuthContext loading infinito | El spinner nunca desaparecía al cargar la app | Simplificado el código de inicialización y agregado manejo de errores | ✅ Corregido |
+| AuthContext loading infinito | El spinner nunca desaparecía al cargar la app | Simplificado el código de inicialización y mejorado manejo de errores | ✅ Corregido |
 | usePractice no actualizaba nivel | Después de 2 aciertos, el nivel no subía | Se actualiza `currentWord` después de guardar en DB | ✅ Corregido |
 | Login no reconocía contraseña | El campo de contraseña no actualizaba el estado de React | Agregado onInput handler además de onChange | ✅ Corregido |
 | RLS groups_insert fallaba | Error "new row violates row-level security policy" | Recreada política con WITH CHECK (true) | ✅ Corregido |
 | Código de grupo case-sensitive | La comparación de códigos fallaba por mayúsculas/minúsculas | Usado ilike y toLowerCase() | ✅ Corregido |
+| Browser confirm() en WordBank | Las pruebas automatizadas no podían interactuar con alert/confirm nativos | Reemplazado por modal React custom | ✅ Corregido |
+| Browser confirm() en Groups | Las pruebas automatizadas no podían interactuar con alert/confirm nativos | Reemplazado por modal React custom | ✅ Corregido |
 
 ## Bugs pendientes
 
@@ -161,33 +163,22 @@
 |**Flujo**|**Total**|**OK**|**Falla**|**Pendiente**|
 | :- | :-: | :-: | :-: | :-: |
 |F-01 · Autenticación|5|5|0|0|
-|F-02 · Banco personal|7|1|0|6 (no probado)|
+|F-02 · Banco personal|7|4|0|3|
 |F-03 · Práctica individual|10|8|0|2|
 |F-04 · Grupos|13|2|0|11|
 |F-05 · Sesión remota|12|0|0|12|
 |F-06 · Sesión presencial|15|0|0|15|
 |F-07 · Casos borde|9|0|0|9|
 |F-08 · Importación Excel|12|0|0|12|
-|TOTAL|83|16|0|67|
+|TOTAL|83|19|0|64|
 
-**Progreso actual: 16/83 (19.3%)**
-
-## Bugs corregidos (sesión actual)
-
-| **Bug** | **Fix** | **Archivo** |
-| :- | :- | :- |
-| Login no reconocía contraseña | Agregado onInput handler | Login.jsx |
-| Código de grupo case-sensitive | Usado ilike en lugar de eq | useGroups.js |
-| Código convertido a mayúsculas | Cambiado a toLowerCase() | Groups.jsx |
-| RLS groups_insert fallaba | Recreada política con WITH CHECK (true) | 20240101000004_fix_groups_rls_v2.sql |
+**Progreso actual: 19/83 (22.9%)**
 
 ## Datos de prueba creados
 
 - **Usuario Cristian**: criou grupo "Grupo Study" (código: 178620f7)
 - **Usuario Test**: entrou no grupo com sucesso
 - **10 palavras**: think, know, see, go, come, take, make, get, bold, run
-
-> ✅ RLS groups_insert corregido y aplicado
 
 |Criterio de aceptación del MVP: 100% de F-01, F-02 y F-03 en OK. Mínimo 85% del total (70/83). Todos los casos de F-07 verificados.|
 | :- |
