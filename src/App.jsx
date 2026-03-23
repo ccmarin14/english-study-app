@@ -7,6 +7,8 @@ import WordBank from './pages/WordBank';
 import AddWord from './pages/AddWord';
 import Practice from './pages/Practice';
 import Groups from './pages/Groups';
+import GroupSession from './pages/GroupSession';
+import PresentialSession from './pages/PresentialSession';
 import ImportWords from './pages/ImportWords';
 import Layout from './components/Layout';
 
@@ -95,6 +97,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Groups />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/group-session"
+        element={
+          <ProtectedRoute>
+            <GroupSession />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/presential-session"
+        element={
+          <ProtectedRoute>
+            <PresentialSession />
           </ProtectedRoute>
         }
       />

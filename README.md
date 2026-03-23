@@ -30,7 +30,7 @@ Cada palabra se practica en 4 pasos: adivinanza con frase incompleta → traducc
 | Frontend | React + Vite |
 | Estilos | Tailwind CSS |
 | Base de datos | Supabase (PostgreSQL) |
-| Autenticación | Supabase Auth — Google OAuth |
+| Autenticación | Supabase Auth — Magic Link |
 | Routing | react-router-dom |
 | Excel | xlsx |
 
@@ -54,9 +54,8 @@ Toda la documentación del proyecto está en `/docs`:
 
 - Node.js >= 18.x
 - npm >= 9.x
-- Supabase CLI
 - Cuenta en [Supabase](https://supabase.com)
-- Proyecto en [Google Cloud Console](https://console.cloud.google.com) para OAuth
+- Proyecto Supabase configurado con las tablas y RLS
 
 ---
 
@@ -74,12 +73,10 @@ npm install
 cp .env.example .env.local
 # Editar .env.local con las credenciales de Supabase
 
-# 4. Vincular con el proyecto Supabase
-supabase login
-supabase link --project-ref <project-ref>
+# 4. Ejecutar migraciones SQL en Supabase Dashboard
+# Copiar el contenido de supabase/schema_complete.sql y ejecutar en SQL Editor
 
-# 5. Ejecutar migraciones
-supabase db push
+# 5. Crear usuarios de prueba en Supabase Dashboard → Authentication → Users
 
 # 6. Iniciar el servidor de desarrollo
 npm run dev
@@ -100,6 +97,26 @@ Los valores se obtienen en **Supabase Dashboard → Settings → API**.
 
 ---
 
+## Configuración inicial en Supabase
+
+### 1. Ejecutar Schema SQL
+
+1. Ir a **Supabase Dashboard → SQL Editor**
+2. Copiar todo el contenido de `supabase/schema_complete.sql`
+3. Ejecutar el script
+
+### 2. Crear usuarios de prueba
+
+1. Ir a **Supabase Dashboard → Authentication → Users**
+2. Click en **Add User** → **Create new user**
+3. Ingresar email y generar contraseña temporal
+4. Una vez creado el usuario en auth.users, insertar en la tabla `profiles`:
+   - El `id` debe ser el UUID del usuario en auth.users
+   - `username`: nombre visible para el usuario
+   - `avatar_color`: color hex para el avatar (ej: `#4F46E5`)
+
+---
+
 ## Estructura del proyecto
 
 ```
@@ -109,13 +126,14 @@ english-study-app/
 ├── docs/                        ← documentación del proyecto
 ├── supabase/
 │   ├── migrations/              ← archivos SQL de migraciones
+│   ├── schema_complete.sql      ← SQL completo para ejecutar en Dashboard
 │   └── config.toml
 └── src/
     ├── components/              ← componentes reutilizables
-    ├── pages/                   ← una página por ruta
-    ├── hooks/                   ← lógica por entidad o flujo
-    ├── lib/                     ← utilidades y cliente Supabase
-    └── context/                 ← estado global (auth)
+    ├── pages/                  ← una página por ruta
+    ├── hooks/                  ← lógica por entidad o flujo
+    ├── lib/                    ← utilidades y cliente Supabase
+    └── context/                ← estado global (auth)
 ```
 
 ---
@@ -126,17 +144,71 @@ english-study-app/
 npm run dev      # servidor de desarrollo
 npm run build    # build de producción
 npm run preview  # previsualizar build
+npm run lint     # linting
 ```
 
 ---
 
-## Fases del proyecto
+## Funcionalidades implementadas
 
-| # | Fase | Estado |
-|---|------|--------|
-| 1 | Problem Definition | ✅ Completo |
-| 2 | Requirements | ✅ Completo |
-| 3 | System Design | ✅ Completo |
-| 4 | Technical Spec | ✅ Completo |
-| 5 | Implementation | ⏳ Pendiente |
-| 6 | Testing & Validation | ✅ Completo |
+### RF-01 · Autenticación
+- ✅ Magic link (signInWithOtp) para acceso por email
+- ✅ Usuarios pre-creados por administrador
+- ✅ Perfil con username y avatar_color
+
+### RF-02 · Banco de palabras personal
+- ✅ CRUD de palabras con traducciones
+- ✅ Exportar palabras al grupo
+
+### RF-03 · Banco de frases personal
+- ✅ CRUD de frases asociadas a traducciones
+
+### RF-04 · Sistema de práctica individual
+- ✅ Flashcard, Quiz, Writing
+- ✅ Selección ponderada por nivel
+
+### RF-05 · Sistema de progreso
+- ✅ Nivel 0-5 por palabra
+- ✅ Aciertos consecutivos para subir
+- ✅ Un fallo para bajar
+
+### RF-06 · Grupos
+- ✅ Crear, unirse con código
+- ✅ Fusión de palabras al unirse
+- ✅ Exportar palabras al grupo
+
+### RF-07 · Progreso grupal y sincronización
+- ✅ Progreso por miembro dentro del grupo
+- ✅ Sincronización al unirse
+
+### RF-08 · Importación desde Excel
+- ✅ Parser xlsx con fusión
+- ✅ Plantilla descargable
+- ✅ Resumen de importación
+
+### RF-09 · Sesiones grupales
+- ✅ Una sesión activa por grupo
+- ✅ Creación de sesión
+
+### RF-10 · Mecánica de sesión remota
+- ✅ 4 pasos por turno
+- ✅ Roles por turno
+
+### RF-11 · Mecánica de sesión presencial
+- ✅ Confirmación de asistencia
+- ✅ Orden aleatorio
+- ✅ Conductor fijo
+- ✅ Panel lateral de turno
+
+---
+
+## Estados del proyecto
+
+| Fase | Estado |
+|------|--------|
+| Problem Definition | ✅ Completo |
+| Requirements | ✅ Completo |
+| System Design | ✅ Completo |
+| Technical Spec | ✅ Completo |
+| Implementation | ✅ Completo |
+| Testing & Validation | ⏳ Pendiente |

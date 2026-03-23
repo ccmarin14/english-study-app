@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { useGroups } from '../hooks/useGroups';
 import { useGroupWords } from '../hooks/useGroupWords';
 import WordCard from '../components/WordCard';
 
 export default function Groups() {
+  const navigate = useNavigate();
   const {
     groups,
     currentGroup,
@@ -240,12 +242,26 @@ export default function Groups() {
                         {currentGroup.words_per_session} palabras por sesión
                       </p>
                     </div>
-                    <button
-                      onClick={handleLeave}
-                      className="text-red-600 hover:text-red-700 text-sm"
-                    >
-                      Abandonar grupo
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => navigate('/group-session')}
+                        className="px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700"
+                      >
+                        🌐 Sesión Remota
+                      </button>
+                      <button
+                        onClick={() => navigate('/presential-session')}
+                        className="px-3 py-1 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700"
+                      >
+                        👥 Sesión Presencial
+                      </button>
+                      <button
+                        onClick={handleLeave}
+                        className="text-red-600 hover:text-red-700 text-sm"
+                      >
+                        Abandonar
+                      </button>
+                    </div>
                   </div>
 
                   <div className="bg-white rounded-lg shadow-sm p-6">
