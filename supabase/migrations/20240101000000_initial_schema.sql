@@ -1,12 +1,9 @@
 -- English Study App - Initial Schema
 -- Version: 1.0
 
--- Extension required for UUID generation
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- ============================================
 -- PROFILES
--- ============================================
 CREATE TABLE profiles (
   id             uuid        PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   username       text        NOT NULL UNIQUE,
@@ -14,9 +11,8 @@ CREATE TABLE profiles (
   created_at     timestamptz NOT NULL DEFAULT now()
 );
 
--- Trigger: create profile automatically when user is created
 CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS trigger AS $
+RETURNS trigger AS $$
 BEGIN
   INSERT INTO profiles (id, username, avatar_color)
   VALUES (
@@ -30,15 +26,13 @@ BEGIN
   );
   RETURN NEW;
 END;
-$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
--- ============================================
--- WORDS y WORD TRANSLATIONS
--- ============================================
+-- WORDS
 CREATE TABLE words (
   id           uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   word_en      text        NOT NULL,
@@ -62,9 +56,7 @@ CREATE TABLE word_translations (
 
 CREATE INDEX idx_word_translations_word ON word_translations(word_id);
 
--- ============================================
 -- PHRASES
--- ============================================
 CREATE TABLE phrases (
   id                   uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   phrase_en            text        NOT NULL,
@@ -74,12 +66,10 @@ CREATE TABLE phrases (
   created_at           timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_phrases_owner       ON phrases(owner_id);
+CREATE INDEX idx_phrases_owner ON phrases(owner_id);
 CREATE INDEX idx_phrases_translation ON phrases(word_translation_id);
 
--- ============================================
 -- USER WORD PROGRESS
--- ============================================
 CREATE TABLE user_word_progress (
   id                  uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id             uuid        NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -92,9 +82,7 @@ CREATE TABLE user_word_progress (
 
 CREATE INDEX idx_uwp_user ON user_word_progress(user_id);
 
--- ============================================
--- GROUPS y GROUP MEMBERS
--- ============================================
+-- GROUPS
 CREATE TABLE groups (
   id                  uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   name                text        NOT NULL,
@@ -113,12 +101,10 @@ CREATE TABLE group_members (
   UNIQUE (group_id, user_id)
 );
 
-CREATE INDEX idx_group_members_user  ON group_members(user_id);
+CREATE INDEX idx_group_members_user ON group_members(user_id);
 CREATE INDEX idx_group_members_group ON group_members(group_id);
 
--- ============================================
--- GROUP WORDS y GROUP WORD TRANSLATIONS
--- ============================================
+-- GROUP WORDS
 CREATE TABLE group_words (
   id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   group_id      uuid        NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -141,9 +127,7 @@ CREATE TABLE group_word_translations (
 
 CREATE INDEX idx_gwt_word ON group_word_translations(group_word_id);
 
--- ============================================
 -- GROUP PHRASES
--- ============================================
 CREATE TABLE group_phrases (
   id                         uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   group_id                   uuid        NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -156,9 +140,7 @@ CREATE TABLE group_phrases (
 
 CREATE INDEX idx_group_phrases_group ON group_phrases(group_id);
 
--- ============================================
 -- GROUP WORD PROGRESS
--- ============================================
 CREATE TABLE group_word_progress (
   id                  uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id             uuid        NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -170,12 +152,10 @@ CREATE TABLE group_word_progress (
   UNIQUE (user_id, group_id, group_word_id)
 );
 
-CREATE INDEX idx_gwp_user  ON group_word_progress(user_id);
+CREATE INDEX idx_gwp_user ON group_word_progress(user_id);
 CREATE INDEX idx_gwp_group ON group_word_progress(group_id);
 
--- ============================================
 -- GROUP SESSIONS
--- ============================================
 CREATE TABLE group_sessions (
   id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   group_id      uuid        NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
@@ -190,17 +170,14 @@ CREATE TABLE group_sessions (
     CHECK (mode != 'presential' OR conductor_id IS NOT NULL)
 );
 
-CREATE INDEX idx_sessions_group  ON group_sessions(group_id);
+CREATE INDEX idx_sessions_group ON group_sessions(group_id);
 CREATE INDEX idx_sessions_status ON group_sessions(group_id, status);
 
--- Only one active session per group at a time
 CREATE UNIQUE INDEX idx_one_active_session
   ON group_sessions(group_id)
   WHERE status = 'active';
 
--- ============================================
 -- SESSION ATTENDEES
--- ============================================
 CREATE TABLE session_attendees (
   id           uuid  PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id   uuid  NOT NULL REFERENCES group_sessions(id) ON DELETE CASCADE,
@@ -209,9 +186,7 @@ CREATE TABLE session_attendees (
   UNIQUE (session_id, user_id)
 );
 
--- ============================================
 -- SESSION TURNS
--- ============================================
 CREATE TABLE session_turns (
   id               uuid  PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id       uuid  NOT NULL REFERENCES group_sessions(id) ON DELETE CASCADE,
@@ -227,9 +202,7 @@ CREATE TABLE session_turns (
 
 CREATE INDEX idx_turns_session ON session_turns(session_id);
 
--- ============================================
 -- SESSION ATTEMPTS
--- ============================================
 CREATE TABLE session_attempts (
   id            uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   turn_id       uuid        NOT NULL REFERENCES session_turns(id) ON DELETE CASCADE,
@@ -242,9 +215,7 @@ CREATE TABLE session_attempts (
 
 CREATE INDEX idx_attempts_turn ON session_attempts(turn_id);
 
--- ============================================
--- SESSION SUBMISSIONS y REVIEWS
--- ============================================
+-- SESSION SUBMISSIONS
 CREATE TABLE session_submissions (
   id               uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   turn_id          uuid        NOT NULL REFERENCES session_turns(id) ON DELETE CASCADE,
@@ -254,6 +225,7 @@ CREATE TABLE session_submissions (
   created_at       timestamptz NOT NULL DEFAULT now()
 );
 
+-- SESSION REVIEWS
 CREATE TABLE session_reviews (
   id              uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   submission_id   uuid        NOT NULL REFERENCES session_submissions(id) ON DELETE CASCADE,
@@ -264,9 +236,7 @@ CREATE TABLE session_reviews (
   UNIQUE (submission_id, reviewer_id)
 );
 
--- ============================================
 -- SESSION TURN CONFIRMATIONS
--- ============================================
 CREATE TABLE session_turn_confirmations (
   id             uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   turn_id        uuid        NOT NULL REFERENCES session_turns(id) ON DELETE CASCADE,
