@@ -30,7 +30,7 @@ Cada palabra se practica en 4 pasos: adivinanza con frase incompleta → traducc
 | Frontend | React + Vite |
 | Estilos | Tailwind CSS |
 | Base de datos | Supabase (PostgreSQL) |
-| Autenticación | Supabase Auth — Magic Link |
+| Autenticación | Supabase Auth — Email/Password |
 | Routing | react-router-dom |
 | Excel | xlsx |
 
@@ -109,11 +109,17 @@ Los valores se obtienen en **Supabase Dashboard → Settings → API**.
 
 1. Ir a **Supabase Dashboard → Authentication → Users**
 2. Click en **Add User** → **Create new user**
-3. Ingresar email y generar contraseña temporal
+3. Ingresar email y una contraseña inicial
 4. Una vez creado el usuario en auth.users, insertar en la tabla `profiles`:
    - El `id` debe ser el UUID del usuario en auth.users
-   - `username`: nombre visible para el usuario
+   - `username`: nombre visible para el usuario (ej: "Juan")
    - `avatar_color`: color hex para el avatar (ej: `#4F46E5`)
+
+### 3. Habilitar Email Provider
+
+1. Ir a **Supabase Dashboard → Authentication → Providers → Email**
+2. Habilitar **"Enable Email Sign-in"**
+3. Opcional: deshabilitar **"Confirm Email"** para testing
 
 ---
 
@@ -152,9 +158,10 @@ npm run lint     # linting
 ## Funcionalidades implementadas
 
 ### RF-01 · Autenticación
-- ✅ Magic link (signInWithOtp) para acceso por email
+- ✅ Login con email y contraseña (signInWithPassword)
 - ✅ Usuarios pre-creados por administrador
 - ✅ Perfil con username y avatar_color
+- ✅ Sesión persistente (no requiere re-login hasta signOut)
 
 ### RF-02 · Banco de palabras personal
 - ✅ CRUD de palabras con traducciones
