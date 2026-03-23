@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '../components/Layout';
 import { useGroups } from '../hooks/useGroups';
 import { useGroupSession } from '../hooks/useGroupSession';
 
@@ -67,63 +66,57 @@ export default function GroupSession() {
 
   if (groupsLoading || loading) {
     return (
-      <Layout>
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
-        </div>
-      </Layout>
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
+      </div>
     );
   }
 
   if (!currentGroup) {
     return (
-      <Layout>
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900">No perteneces a un grupo</h2>
-          <Link to="/groups" className="text-indigo-600 hover:text-indigo-700 mt-2 inline-block">
-            Ir a Grupos →
-          </Link>
-        </div>
-      </Layout>
+      <div className="text-center py-12">
+        <h2 className="text-xl font-semibold text-gray-900">No perteneces a un grupo</h2>
+        <Link to="/groups" className="text-indigo-600 hover:text-indigo-700 mt-2 inline-block">
+          Ir a Grupos →
+        </Link>
+      </div>
     );
   }
 
   if (!session) {
     return (
-      <Layout>
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Sesión Grupal</h1>
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Sesión Grupal</h1>
 
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-semibold mb-2">{currentGroup.name}</h2>
-            <p className="text-gray-600">{words.length} palabras disponibles</p>
-            <p className="text-gray-600">{members.length} miembros</p>
-          </div>
-
-          {words.length === 0 ? (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-              <p className="text-yellow-800">
-                No hay palabras en el grupo. Exporta palabras desde tu banco personal para comenzar una sesión.
-              </p>
-              <Link
-                to="/groups"
-                className="inline-block mt-4 text-indigo-600 hover:text-indigo-700"
-              >
-                Ir al grupo →
-              </Link>
-            </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold mb-4">Iniciar nueva sesión</h3>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-              >
-                Comenzar sesión
-              </button>
-            </div>
-          )}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-2">{currentGroup.name}</h2>
+          <p className="text-gray-600">{words.length} palabras disponibles</p>
+          <p className="text-gray-600">{members.length} miembros</p>
         </div>
+
+        {words.length === 0 ? (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+            <p className="text-yellow-800">
+              No hay palabras en el grupo. Exporta palabras desde tu banco personal para comenzar una sesión.
+            </p>
+            <Link
+              to="/groups"
+              className="inline-block mt-4 text-indigo-600 hover:text-indigo-700"
+            >
+              Ir al grupo →
+            </Link>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-semibold mb-4">Iniciar nueva sesión</h3>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Comenzar sesión
+            </button>
+          </div>
+        )}
 
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -174,32 +167,29 @@ export default function GroupSession() {
             </div>
           </div>
         )}
-      </Layout>
+      </div>
     );
   }
 
   if (session.status === 'closed') {
     return (
-      <Layout>
-        <div className="max-w-2xl mx-auto text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Sesión completada</h2>
-          <p className="text-gray-600 mb-6">
-            La sesión ha finalizado. ¡Buen trabajo!
-          </p>
-          <Link
-            to="/groups"
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Volver al grupo
-          </Link>
-        </div>
-      </Layout>
+      <div className="max-w-2xl mx-auto text-center py-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Sesión completada</h2>
+        <p className="text-gray-600 mb-6">
+          La sesión ha finalizado. ¡Buen trabajo!
+        </p>
+        <Link
+          to="/groups"
+          className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+        >
+          Volver al grupo
+        </Link>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6">
         <div className="bg-white rounded-lg shadow-sm p-4">
           <div className="flex justify-between items-center">
             <div>
@@ -342,6 +332,5 @@ export default function GroupSession() {
           </div>
         </div>
       </div>
-    </Layout>
   );
 }

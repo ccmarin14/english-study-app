@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
 import { useGroups } from '../hooks/useGroups';
 import { useGroupWords } from '../hooks/useGroupWords';
 import WordCard from '../components/WordCard';
@@ -82,17 +81,14 @@ export default function Groups() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
-        </div>
-      </Layout>
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Grupos</h1>
           <div className="flex gap-4">
@@ -288,6 +284,5 @@ export default function Groups() {
           </div>
         )}
       </div>
-    </Layout>
   );
 }

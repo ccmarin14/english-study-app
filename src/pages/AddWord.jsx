@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
 import { useWords } from '../hooks/useWords';
 import { useGroups } from '../hooks/useGroups';
 
@@ -79,8 +78,7 @@ export default function AddWord() {
   };
 
   return (
-    <Layout>
-      <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Añadir nueva palabra</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -239,6 +237,5 @@ export default function AddWord() {
           </div>
         </form>
       </div>
-    </Layout>
   );
 }

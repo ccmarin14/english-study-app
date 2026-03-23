@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { calcWeight } from '../lib/spacedRepetition';
@@ -64,17 +63,14 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
-        </div>
-      </Layout>
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-2xl font-bold text-gray-900">
             Bienvenido, {profile?.username || 'Usuario'}
@@ -156,6 +152,5 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-    </Layout>
   );
 }

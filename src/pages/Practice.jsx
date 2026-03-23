@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import Layout from '../components/Layout';
 import { usePractice } from '../hooks/usePractice';
 import ProgressBar from '../components/ProgressBar';
 import QuizOption from '../components/QuizOption';
@@ -78,29 +77,24 @@ export default function Practice() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
-        </div>
-      </Layout>
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
+      </div>
     );
   }
 
   if (words.length === 0) {
     return (
-      <Layout>
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900">No hay palabras para practicar</h2>
-          <p className="text-gray-600 mt-2">
-            Añade palabras a tu banco para comenzar a practicar
-          </p>
-        </div>
-      </Layout>
+      <div className="text-center py-12">
+        <h2 className="text-xl font-semibold text-gray-900">No hay palabras para practicar</h2>
+        <p className="text-gray-600 mt-2">
+          Añade palabras a tu banco para comenzar a practicar
+        </p>
+      </div>
     );
   }
 
   return (
-    <Layout>
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Práctica</h1>
@@ -305,6 +299,5 @@ export default function Practice() {
           </div>
         )}
       </div>
-    </Layout>
   );
 }

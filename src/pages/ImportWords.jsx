@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import { parseImportFile, groupByWord, importWords, downloadTemplate } from '../lib/importWords';
 
@@ -51,8 +50,7 @@ export default function ImportWords() {
   };
 
   return (
-    <Layout>
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Importar palabras</h1>
           <button
@@ -166,6 +164,5 @@ export default function ImportWords() {
           </div>
         )}
       </div>
-    </Layout>
   );
 }
