@@ -1,0 +1,102 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Layout from '../components/Layout';
+import { useWords } from '../hooks/useWords';
+import WordCard from '../components/WordCard';
+
+export default function WordBank() {
+  const { words, loading, archiveWord } = useWords();
+  const [search, setSearch] = useState('');
+  const navigate = useNavigate();
+
+  const filteredWords = words.filter(word =>
+    word.word_en.toLowerCase().includes(search.toLowerCase()) ||
+    word.word_translations?.some(t =>
+      t.translation_es.toLowerCase().includes(search.toLowerCase())
+    )
+  );
+
+  const handleArchive = async (wordId) => {
+    if (confirm('¿Archivar esta palabra?')) {
+      await archiveWord(wordId);
+    }
+  };
+
+  const handleWordClick = (word) => {
+    navigate('/word-bank', { state: { selectedWord: word } });
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-indigo-600 border-t-transparent"></div>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">Banco de Palabras</h1>
+          <div className="flex gap-4">
+            <button
+              onClick={() => navigate('/import')}
+              className="px-4 py-2 text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+            >
+              📥 Importar Excel
+            </button>
+            <button
+              onClick={() => navigate('/add-word')}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              ➕ Añadir palabra
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <input
+            type="text"
+            placeholder="Buscar palabra o traducción..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+
+        {filteredWords.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            <p className="text-lg">
+              {words.length === 0
+                ? 'No tienes palabras en tu banco'
+                : 'No se encontraron palabras'}
+            </p>
+            {words.length === 0 && (
+              <button
+                onClick={() => navigate('/add-word')}
+                className="mt-4 text-indigo-600 hover:text-indigo-700"
+              >
+                Añadir tu primera palabra →
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredWords.map((word) => (
+              <WordCard
+                key={word.id}
+                word={word}
+                onClick={() => handleWordClick(word)}
+                onArchive={handleArchive}
+                showProgress
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </Layout>
+  );
+}
