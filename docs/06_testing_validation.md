@@ -62,7 +62,7 @@
 |**Editar nombre y palabras por sesión**|Los cambios se reflejan inmediatamente para todos los miembros|☐ Pendiente|No implementado en UI|
 |**Unirse con código**|El usuario entra al grupo y su banco personal recibe las palabras por fusión|☑ OK ✅|Test se unió con código 178620f7|
 |**Fusión — palabra nueva**|Una palabra del grupo que no existía en el banco personal se añade completa|☐ Pendiente|No probado|
-|**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☐ Pendiente|No probado|
+|**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☑ OK ✅|Probado: book+texto añadido al grupo|
 |**Fusión — ejemplo diferente**|Si la traducción existe pero el ejemplo difiere, se conservan ambos ejemplos|☐ Pendiente|No probado|
 |**Fusión — ejemplo idéntico**|Si la traducción y el ejemplo son idénticos, no se duplica|☐ Pendiente|No probado|
 |**Progreso al unirse**|Todas las palabras descargadas inician con level=0 en group\_word\_progress|☐ Pendiente|No probado|
@@ -175,14 +175,14 @@
 |F-01 · Autenticación|5|5|0|0|
 |F-02 · Banco personal|7|7|0|0|
 |F-03 · Práctica individual|10|9|0|1|
-|F-04 · Grupos|13|4|0|9|
+|F-04 · Grupos|13|5|0|8|
 |F-05 · Sesión remota|12|9|0|3|
 |F-06 · Sesión presencial|15|6|0|9|
 |F-07 · Casos borde|9|6|0|3|
 |F-08 · Importación Excel|12|12|0|0|
-|TOTAL|83|58|0|25|
+|TOTAL|83|59|0|24|
 
-**Progreso actual: 58/83 (69.9%)** - MVP: F-01✅ F-02✅ F-03⚠️
+**Progreso actual: 59/83 (71.1%)** - MVP: F-01✅ F-02✅ F-03⚠️
 
 **F-08 Completado: 12/12 ✅**
 
