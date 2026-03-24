@@ -156,25 +156,33 @@
 | createSession race condition | members del estado podía no estar sincronizado al crear sesión | Se obtiene members directamente de DB antes de crear turns | ✅ Corregido |
 | Session turns RLS 406 error | session_turns retornaba 406 Not Acceptable | Creada función RPC get_session_turns y deshabilitado RLS en tablas session_* | ✅ Corregido |
 
+## Bugs corregidos adicionalmente
+
+| **Bug** | **Descripción** | **Fix** | **Estado** |
+| :- | :- | :- | :-: |
+| Avance automático en sesiones | Pasos no avanzaban automáticamente al fallar | Añadido setTimeout para avanzar después de 2s | ✅ Corregido |
+
 ## Bugs pendientes
 
-(No hay bugs pendientes - RLS fix aplicado)
+| **Bug** | **Descripción** | **Investigando** |
+| :- | :- | :-: |
+| Modal presencial no responde | Selector de conductor y botón iniciar no funcionan | UI no responde correctamente | 🔧 Investigando |
 
 # **Resumen de verificación**
 
 |**Flujo**|**Total**|**OK**|**Falla**|**Pendiente**|
 | :- | :-: | :-: | :-: | :-: |
 |F-01 · Autenticación|5|5|0|0|
-|F-02 · Banco personal|7|5|0|2|
-|F-03 · Práctica individual|10|8|0|2|
-|F-04 · Grupos|13|2|0|11|
-|F-05 · Sesión remota|12|4|0|8|
+|F-02 · Banco personal|7|6|0|1|
+|F-03 · Práctica individual|10|9|0|1|
+|F-04 · Grupos|13|3|0|10|
+|F-05 · Sesión remota|12|5|0|7|
 |F-06 · Sesión presencial|15|5|0|10|
 |F-07 · Casos borde|9|0|0|9|
 |F-08 · Importación Excel|12|10|0|2|
-|TOTAL|83|39|0|44|
+|TOTAL|83|43|0|40|
 
-**Progreso actual: 39/83 (47.0%)**
+**Progreso actual: 43/83 (51.8%)**
 
 ## Datos de prueba creados
 

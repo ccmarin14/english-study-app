@@ -53,15 +53,25 @@ export default function GroupSession() {
     setStep1Answer('');
     if (isCorrect || !currentTurn?.discoverer_id) {
       setShowHint(true);
+      if (!isCorrect) {
+        setTimeout(() => {
+          advanceStep();
+        }, 2000);
+      }
     }
   };
 
   const handleStep2Submit = async () => {
     const isCorrect = translations.some(
-      t => t.translation_es.toLowerCase() === step2Answer.toLowerCase().trim()
+      t => t.translation_es.toLowerCase().trim() === step2Answer.toLowerCase().trim()
     );
     await submitAttempt(step2Answer, isCorrect, 2);
     setStep2Answer('');
+    if (!isCorrect) {
+      setTimeout(() => {
+        advanceStep();
+      }, 2000);
+    }
   };
 
   if (groupsLoading || loading) {
