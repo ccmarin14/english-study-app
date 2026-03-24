@@ -119,7 +119,7 @@
 |**Todos los miembros fallan paso 1**|La sesión avanza normalmente al paso 2 sin Rol B|☑ OK ✅|Probado: wrong answer → avanzó a paso 2 (traducción)|
 |**Todos los miembros fallan paso 2**|Aparecen opciones; si todos fallan, se avanza al paso 3 sin penalidad|☑ OK ✅|Probado: wrong translation → avanzó a paso 3 (construye frase)|
 |**Usuario pierde conexión en sesión remota**|Al reconectarse, el estado de la sesión se recupera correctamente desde Supabase|☐ OK  ☐ Falla||
-|**Dos usuarios intentan crear sesión simultáneamente**|Solo una sesión se crea; la otra recibe error por el índice único|☐ OK  ☐ Falla||
+|**Dos usuarios intentan crear sesión simultáneamente**|Solo una sesión se crea; la otra recibe error por el índice único|⚠️ Parcial|DB tiene índice único - requiere prueba con múltiples usuarios|
 |**Palabra con una sola traducción en quiz**|El quiz genera 3 distractores del banco aunque la palabra tenga una sola traducción|☑ OK ✅|Probado con pencil (1 traducción): mostró silla, mesa, lápiz|
 |**Exportar palabra ya existente en el grupo**|El sistema detecta el duplicado y no crea una segunda copia en group\_words|☑ OK ✅|Export pencil 2 veces: se mantuvo en 12 palabras|
 
