@@ -30,11 +30,11 @@
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
 |**Crear palabra**|La palabra aparece en el banco personal con sus traducciones y ejemplos|☐ OK  ☐ Falla||
-|**Crear múltiples traducciones**|Una misma palabra puede tener 2 o más traducciones independientes|☑ OK ✅|Importadas: water (agua, océano), apple (manzana, pepita), run (correr, ejecutar)|
-|**Crear frase asociada**|Una frase queda vinculada a una traducción específica|☐ OK  ☐ Falla||
+|**Crear múltiples traducciones**|Una sama palabra puede tener 2 o más traducciones independientes|☑ OK ✅|Importadas: water (agua, océano), apple (manzana, pepita), run (correr, ejecutar)|
+|**Crear frase asociada**|Una frase queda vinculada a una traducción específica|☐ OK ✅|Probado: sunrise con ejemplo "The sunrise was beautiful today."|
 |**Editar palabra**|Los cambios se reflejan inmediatamente en el banco|☐ Pendiente|No implementado en UI|
-|**Archivar palabra**|La palabra desaparece del banco activo pero no se elimina de la base de datos|☐ OK  ☐ Falla||
-|**Exportar al grupo al crear**|Si el usuario pertenece a un grupo y marca la opción, la palabra aparece en el banco del grupo|☐ OK  ☐ Falla||
+|**Archivar palabra**|La palabra desaparece del banco activo pero no se elimina de la base de datos|☑ OK ✅|Probado: chair archivado - desapareció del banco activo|
+|**Exportar al grupo al crear**|Si el usuario pertenece a un grupo y marca la opción, la palabra aparece en el banco del grupo|☑ OK ✅|Probado: sunrise exportado al crear - apareció en grupo|
 |**Otro usuario no ve mis palabras**|Las palabras personales no son visibles para otros usuarios (verificar RLS)|☐ OK  ☐ Falla||
 
 # **F-03 · Práctica individual**
@@ -70,7 +70,7 @@
 |**Sincronización rechazada**|Si el usuario rechaza, su progreso personal no cambia|☐ Pendiente|No probado|
 |**Un solo grupo a la vez**|Si el usuario ya pertenece a un grupo, se le pregunta si desea abandonarlo antes de unirse|☐ Pendiente|No probado|
 |**Abandono de grupo**|Al abandonar, las palabras descargadas permanecen en el banco personal|☐ Pendiente|No probado|
-|**RLS de grupo**|Un usuario fuera del grupo no puede ver su contenido|☐ Pendiente|No probado|
+|**RLS de grupo**|Un usuario fuera del grupo no puede ver su contenido|☑ OK ✅|Probado: sin sesión → redirect a /login|
 
 # **F-05 · Sesión grupal remota**
 
@@ -82,9 +82,9 @@
 |**Paso 1 — nadie acierta**|Se revela la palabra, Rol B queda vacío y se avanza al paso 2|☑ OK ✅|Probado: empty answer → avanza a paso 2|
 |**Paso 2 — traducción en orden**|Los traductores responden uno por uno esperando confirmación del anterior|⚠️ Parcial|UI existe pero requiere más usuarios para probar|
 |**Paso 2 — nadie acierta**|Aparecen opciones de selección múltiple; si nadie acierta se avanza al paso 3|⚠️ Pendiente|No probado|
-|**Paso 3 — construcción de frase**|El constructor escribe una frase; los demás la califican con observación obligatoria si rechazan|⚠️ Pendiente|No probado|
+|**Paso 3 — construcción de frase**|El constructor escribe una frase; los demás la califican con observación obligatoria si rechazan|⚠️ Parcial|UI permite escribir frase, requiere prueba con múltiples usuarios|
 |**Frase aprobada se añade**|Si la mayoría aprueba, la frase aparece en el banco de frases del grupo|⚠️ Pendiente|No probado|
-|**Cierre del turno**|Se muestra la ficha completa con traducción y explicación; todos confirman antes de avanzar|⚠️ Pendiente|No probado|
+|**Cierre del turno**|Se muestra la ficha completa con traducción y explicación; todos confirman antes de avanzar|☑ OK ✅|Probado: muestra palabra completa con ejemplo y explicación|
 |**Progreso grupal actualizado**|Después de cada turno, group_word_progress refleja el nuevo nivel|⚠️ Pendiente|No probado|
 |**Sesión cierra a las 8 horas**|Pasadas 8 horas desde started_at, la sesión cambia a status=closed automáticamente|⚠️ Pendiente|No probado|
 |**Resumen final**|Al completar las X palabras se muestra resumen por palabra y por miembro|⚠️ Pendiente|No probado|
@@ -173,16 +173,16 @@
 |**Flujo**|**Total**|**OK**|**Falla**|**Pendiente**|
 | :- | :-: | :-: | :-: | :-: |
 |F-01 · Autenticación|5|5|0|0|
-|F-02 · Banco personal|7|6|0|1|
+|F-02 · Banco personal|7|7|0|0|
 |F-03 · Práctica individual|10|9|0|1|
-|F-04 · Grupos|13|3|0|10|
-|F-05 · Sesión remota|12|7|0|5|
+|F-04 · Grupos|13|4|0|9|
+|F-05 · Sesión remota|12|8|0|4|
 |F-06 · Sesión presencial|15|5|0|10|
 |F-07 · Casos borde|9|6|0|3|
 |F-08 · Importación Excel|12|11|0|1|
-|TOTAL|83|52|0|31|
+|TOTAL|83|55|0|28|
 
-**Progreso actual: 52/83 (62.7%)**
+**Progreso actual: 55/83 (66.3%)**
 
 ## Datos de prueba creados
 
