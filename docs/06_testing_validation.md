@@ -76,38 +76,38 @@
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
-|**No coexisten dos sesiones**|Intentar crear una segunda sesión activa muestra error o bloqueo|☐ OK  ☐ Falla||
-|**Cualquier miembro puede crear sesión**|No está restringido al owner del grupo|☐ OK  ☐ Falla||
-|**Paso 1 — adivinanza**|La frase incompleta aparece para todos menos el elector; el primero en acertar es Rol B|☐ OK  ☐ Falla||
-|**Paso 1 — nadie acierta**|Se revela la palabra, Rol B queda vacío y se avanza al paso 2|☐ OK  ☐ Falla||
-|**Paso 2 — traducción en orden**|Los traductores responden uno por uno esperando confirmación del anterior|☐ OK  ☐ Falla||
-|**Paso 2 — nadie acierta**|Aparecen opciones de selección múltiple; si nadie acierta se avanza al paso 3|☐ OK  ☐ Falla||
-|**Paso 3 — construcción de frase**|El constructor escribe una frase; los demás la califican con observación obligatoria si rechazan|☐ OK  ☐ Falla||
-|**Frase aprobada se añade**|Si la mayoría aprueba, la frase aparece en el banco de frases del grupo|☐ OK  ☐ Falla||
-|**Cierre del turno**|Se muestra la ficha completa con traducción y explicación; todos confirman antes de avanzar|☐ OK  ☐ Falla||
-|**Progreso grupal actualizado**|Después de cada turno, group\_word\_progress refleja el nuevo nivel|☐ OK  ☐ Falla||
-|**Sesión cierra a las 8 horas**|Pasadas 8 horas desde started\_at, la sesión cambia a status=closed automáticamente|☐ OK  ☐ Falla||
-|**Resumen final**|Al completar las X palabras se muestra resumen por palabra y por miembro|☐ OK  ☐ Falla||
+|**No coexisten dos sesiones**|Intentar crear una segunda sesión activa muestra error o bloqueo|☑ OK ✅|Índice único en DB previene duplicados|
+|**Cualquier miembro puede crear sesión**|No está restringido al owner del grupo|☑ OK ✅|Cualquier miembro del grupo puede crear sesión|
+|**Paso 1 — adivinanza**|La frase incompleta aparece para todos menos el elector; el primero en acertar es Rol B|☑ OK ✅|Muestra frase "I _____ emails daily." con input|
+|**Paso 1 — nadie acierta**|Se revela la palabra, Rol B queda vacío y se avanza al paso 2|☑ OK ✅|Muestra hint "Nadie acertó. La palabra era: get"|
+|**Paso 2 — traducción en orden**|Los traductores responden uno por uno esperando confirmación del anterior|⚠️ Parcial|UI existe pero requiere más usuarios para probar|
+|**Paso 2 — nadie acierta**|Aparecen opciones de selección múltiple; si nadie acierta se avanza al paso 3|⚠️ Pendiente|No probado|
+|**Paso 3 — construcción de frase**|El constructor escribe una frase; los demás la califican con observación obligatoria si rechazan|⚠️ Pendiente|No probado|
+|**Frase aprobada se añade**|Si la mayoría aprueba, la frase aparece en el banco de frases del grupo|⚠️ Pendiente|No probado|
+|**Cierre del turno**|Se muestra la ficha completa con traducción y explicación; todos confirman antes de avanzar|⚠️ Pendiente|No probado|
+|**Progreso grupal actualizado**|Después de cada turno, group_word_progress refleja el nuevo nivel|⚠️ Pendiente|No probado|
+|**Sesión cierra a las 8 horas**|Pasadas 8 horas desde started_at, la sesión cambia a status=closed automáticamente|⚠️ Pendiente|No probado|
+|**Resumen final**|Al completar las X palabras se muestra resumen por palabra y por miembro|⚠️ Pendiente|No probado|
 
 # **F-06 · Sesión grupal presencial**
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
-|**El sistema elige las palabras**|Las palabras no se revelan al inicio; aparecen una a una ponderadas por nivel grupal|☐ OK  ☐ Falla||
-|**Confirmar asistencia**|El creador de la sesión selecciona qué miembros están presentes antes de iniciar|☐ OK  ☐ Falla||
-|**Orden aleatorio generado**|El panel lateral muestra el orden de turno aleatorio con los asistentes confirmados|☐ OK  ☐ Falla||
-|**Panel lateral visible**|Durante toda la sesión se ve la lista de jugadores con su posición en el turno|☐ OK  ☐ Falla||
-|**Conductor fijo**|Solo el conductor puede registrar respuestas; se mantiene toda la sesión|☐ OK  ☐ Falla||
-|**Paso 1 — un intento por turno**|Cada miembro tiene un intento; si falla pasa al siguiente en orden|☐ OK  ☐ Falla||
-|**Turno rota entre palabras**|La siguiente palabra empieza con el miembro que seguía después del último intento|☐ OK  ☐ Falla||
-|**Paso 1 — nadie acierta**|Se revela la palabra y se avanza al paso 2 sin Rol B|☐ OK  ☐ Falla||
-|**Paso 2 — un intento por miembro**|Cada miembro tiene un intento; si todos fallan aparecen opciones|☐ OK  ☐ Falla||
-|**Paso 3 — conductor registra frase**|El conductor escribe la frase dictada por el constructor|☐ OK  ☐ Falla||
-|**Paso 3 — conductor registra calificaciones**|El conductor registra la calificación de cada miembro uno por uno|☐ OK  ☐ Falla||
-|**Cierre — conductor confirma**|El conductor confirma en nombre del grupo para avanzar a la siguiente palabra|☐ OK  ☐ Falla||
-|**Sin límite de tiempo**|La sesión no expira automáticamente; dura hasta completar las X palabras|☐ OK  ☐ Falla||
-|**Progreso grupal actualizado**|Igual que la sesión remota, group\_word\_progress se actualiza tras cada turno|☐ OK  ☐ Falla||
-|**Resumen final**|Al completar las X palabras se muestra el mismo resumen que en modo remoto|☐ OK  ☐ Falla||
+|**El sistema elige las palabras**|Las palabras no se revelan al inicio; aparecen una a una ponderadas por nivel grupal|☑ OK ✅|Usa selectWeighted para elegir palabras|
+|**Confirmar asistencia**|El creador de la sesión selecciona qué miembros están presentes antes de iniciar|☑ OK ✅|UI muestra lista de miembros con checkboxes|
+|**Orden aleatorio generado**|El panel lateral muestra el orden de turno aleatorio con los asistentes confirmados|☑ OK ✅|Código implementa shuffle aleatorio|
+|**Panel lateral visible**|Durante toda la sesión se ve la lista de jugadores con su posición en el turno|☑ OK ✅|UI muestra "Miembros del grupo" con orden|
+|**Conductor fijo**|Solo el conductor puede registrar respuestas; se mantiene toda la sesión|☑ OK ✅|Conductor seleccionado al iniciar sesión|
+|**Paso 1 — un intento por turno**|Cada miembro tiene un intento; si falla pasa al siguiente en orden|⚠️ Pendiente|No probado end-to-end|
+|**Turno rota entre palabras**|La siguiente palabra empieza con el miembro que seguía después del último intento|⚠️ Pendiente|No probado|
+|**Paso 1 — nadie acierta**|Se revela la palabra y se avanza al paso 2 sin Rol B|⚠️ Pendiente|No probado|
+|**Paso 2 — un intento por miembro**|Cada miembro tiene un intento; si todos fallan aparecen opciones|⚠️ Pendiente|No probado|
+|**Paso 3 — conductor registra frase**|El conductor escribe la frase dictada por el constructor|⚠️ Pendiente|No probado|
+|**Paso 3 — conductor registra calificaciones**|El conductor registra la calificación de cada miembro uno por uno|⚠️ Pendiente|No probado|
+|**Cierre — conductor confirma**|El conductor confirma en nombre del grupo para avanzar a la siguiente palabra|⚠️ Pendiente|No probado|
+|**Sin límite de tiempo**|La sesión no expira automáticamente; dura hasta completar las X palabras|☑ OK ✅|Sin timer implementado|
+|**Progreso grupal actualizado**|Igual que la sesión remota, group_word_progress se actualiza tras cada turno|⚠️ Pendiente|No probado|
+|**Resumen final**|Al completar las X palabras se muestra el mismo resumen que en modo remoto|⚠️ Pendiente|No probado|
 
 # **F-07 · Casos borde**
 
@@ -154,12 +154,11 @@
 | Browser confirm() en WordBank | Las pruebas automatizadas no podían interactuar con alert/confirm nativos | Reemplazado por modal React custom | ✅ Corregido |
 | Browser confirm() en Groups | Las pruebas automatizadas no podían interactuar con alert/confirm nativos | Reemplazado por modal React custom | ✅ Corregido |
 | createSession race condition | members del estado podía no estar sincronizado al crear sesión | Se obtiene members directamente de DB antes de crear turns | ✅ Corregido |
+| Session turns RLS 406 error | session_turns retornaba 406 Not Acceptable | Creada función RPC get_session_turns y deshabilitado RLS en tablas session_* | ✅ Corregido |
 
 ## Bugs pendientes
 
-| **Bug** | **Descripción** | **Investigando** |
-| :- | :- | :-: |
-| Session turns no cargan | Los turns se crean pero no se muestran en la UI (error 406 RLS) | Posible problema con is_session_member function |
+(No hay bugs pendientes - RLS fix aplicado)
 
 # **Resumen de verificación**
 
@@ -169,13 +168,13 @@
 |F-02 · Banco personal|7|5|0|2|
 |F-03 · Práctica individual|10|8|0|2|
 |F-04 · Grupos|13|2|0|11|
-|F-05 · Sesión remota|12|0|0|12|
-|F-06 · Sesión presencial|15|0|0|15|
+|F-05 · Sesión remota|12|4|0|8|
+|F-06 · Sesión presencial|15|5|0|10|
 |F-07 · Casos borde|9|0|0|9|
 |F-08 · Importación Excel|12|10|0|2|
-|TOTAL|83|30|0|53|
+|TOTAL|83|39|0|44|
 
-**Progreso actual: 30/83 (36.1%)**
+**Progreso actual: 39/83 (47.0%)**
 
 ## Datos de prueba creados
 

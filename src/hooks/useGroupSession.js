@@ -86,6 +86,15 @@ export function useGroupSession(groupId) {
   }
 
   async function fetchCurrentTurn() {
+    // Try RPC first, fall back to direct query
+    const { data: rpcData } = await supabase.rpc('get_session_turns', { p_session_id: session.id });
+    
+    if (rpcData && rpcData.length > 0) {
+      setCurrentTurn(rpcData[0]);
+      return;
+    }
+
+    // Fallback to direct query
     const { data } = await supabase
       .from('session_turns')
       .select('*')
