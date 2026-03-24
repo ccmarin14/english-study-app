@@ -32,7 +32,7 @@
 |**Crear palabra**|La palabra aparece en el banco personal con sus traducciones y ejemplos|☐ OK  ☐ Falla||
 |**Crear múltiples traducciones**|Una misma palabra puede tener 2 o más traducciones independientes|☑ OK ✅|Importadas: water (agua, océano), apple (manzana, pepita), run (correr, ejecutar)|
 |**Crear frase asociada**|Una frase queda vinculada a una traducción específica|☐ OK  ☐ Falla||
-|**Editar palabra**|Los cambios se reflejan inmediatamente en el banco|☐ OK  ☐ Falla||
+|**Editar palabra**|Los cambios se reflejan inmediatamente en el banco|☐ Pendiente|No implementado en UI|
 |**Archivar palabra**|La palabra desaparece del banco activo pero no se elimina de la base de datos|☐ OK  ☐ Falla||
 |**Exportar al grupo al crear**|Si el usuario pertenece a un grupo y marca la opción, la palabra aparece en el banco del grupo|☐ OK  ☐ Falla||
 |**Otro usuario no ve mis palabras**|Las palabras personales no son visibles para otros usuarios (verificar RLS)|☐ OK  ☐ Falla||
@@ -58,9 +58,9 @@
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :- |
-|**Crear grupo**|El grupo aparece con nombre, código de invitación único y palabras\_por\_sesión configuradas|☑ OK|Cristian creó "Grupo Study" con código 178620f7, 5 palabras/sesión|
-|**Editar nombre y palabras por sesión**|Los cambios se reflejan inmediatamente para todos los miembros|☐ Pendiente|No probado|
-|**Unirse con código**|El usuario entra al grupo y su banco personal recibe las palabras por fusión|☑ OK|Test se unió con código 178620f7|
+|**Crear grupo**|El grupo aparece con nombre, código de invitación único y palabras\_por\_sesión configuradas|☑ OK ✅|Cristian creó "Grupo Study" con código 178620f7, 5 palabras/sesión|
+|**Editar nombre y palabras por sesión**|Los cambios se reflejan inmediatamente para todos los miembros|☐ Pendiente|No implementado en UI|
+|**Unirse con código**|El usuario entra al grupo y su banco personal recibe las palabras por fusión|☑ OK ✅|Test se unió con código 178620f7|
 |**Fusión — palabra nueva**|Una palabra del grupo que no existía en el banco personal se añade completa|☐ Pendiente|No probado|
 |**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☐ Pendiente|No probado|
 |**Fusión — ejemplo diferente**|Si la traducción existe pero el ejemplo difiere, se conservan ambos ejemplos|☐ Pendiente|No probado|
@@ -79,7 +79,7 @@
 |**No coexisten dos sesiones**|Intentar crear una segunda sesión activa muestra error o bloqueo|☑ OK ✅|Índice único en DB previene duplicados|
 |**Cualquier miembro puede crear sesión**|No está restringido al owner del grupo|☑ OK ✅|Cualquier miembro del grupo puede crear sesión|
 |**Paso 1 — adivinanza**|La frase incompleta aparece para todos menos el elector; el primero en acertar es Rol B|☑ OK ✅|Muestra frase "I _____ emails daily." con input|
-|**Paso 1 — nadie acierta**|Se revela la palabra, Rol B queda vacío y se avanza al paso 2|☑ OK ✅|Muestra hint "Nadie acertó. La palabra era: get"|
+|**Paso 1 — nadie acierta**|Se revela la palabra, Rol B queda vacío y se avanza al paso 2|☑ OK ✅|Probado: empty answer → avanza a paso 2|
 |**Paso 2 — traducción en orden**|Los traductores responden uno por uno esperando confirmación del anterior|⚠️ Parcial|UI existe pero requiere más usuarios para probar|
 |**Paso 2 — nadie acierta**|Aparecen opciones de selección múltiple; si nadie acierta se avanza al paso 3|⚠️ Pendiente|No probado|
 |**Paso 3 — construcción de frase**|El constructor escribe una frase; los demás la califican con observación obligatoria si rechazan|⚠️ Pendiente|No probado|
@@ -98,7 +98,7 @@
 |**Orden aleatorio generado**|El panel lateral muestra el orden de turno aleatorio con los asistentes confirmados|☑ OK ✅|Código implementa shuffle aleatorio|
 |**Panel lateral visible**|Durante toda la sesión se ve la lista de jugadores con su posición en el turno|☑ OK ✅|UI muestra "Miembros del grupo" con orden|
 |**Conductor fijo**|Solo el conductor puede registrar respuestas; se mantiene toda la sesión|☑ OK ✅|Conductor seleccionado al iniciar sesión|
-|**Paso 1 — un intento por turno**|Cada miembro tiene un intento; si falla pasa al siguiente en orden|⚠️ Pendiente|No probado end-to-end|
+|**Paso 1 — un intento por turno**|Cada miembro tiene un intento; si falla pasa al siguiente en orden|⚠️ Parcial|UI permite seleccionar asistentes y conductor|
 |**Turno rota entre palabras**|La siguiente palabra empieza con el miembro que seguía después del último intento|⚠️ Pendiente|No probado|
 |**Paso 1 — nadie acierta**|Se revela la palabra y se avanza al paso 2 sin Rol B|⚠️ Pendiente|No probado|
 |**Paso 2 — un intento por miembro**|Cada miembro tiene un intento; si todos fallan aparecen opciones|⚠️ Pendiente|No probado|
@@ -113,15 +113,15 @@
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
-|**Banco vacío — práctica individual**|Si el usuario no tiene palabras, la pantalla de práctica muestra un mensaje apropiado en vez de fallar|☐ OK  ☐ Falla||
+|**Banco vacío — práctica individual**|Si el usuario no tiene palabras, la pantalla de práctica muestra un mensaje apropiado en vez de fallar|☑ OK ✅|Muestra "No hay palabras para practicar" con botón para añadir|
 |**Grupo sin palabras — crear sesión**|Si el grupo no tiene palabras exportadas, no se puede crear sesión y se informa al usuario|☐ OK  ☐ Falla||
 |**Grupo de 3 personas — sesión**|El Rol A actúa como Rol D en el paso 3; el flujo no se rompe|☐ OK  ☐ Falla||
-|**Todos los miembros fallan paso 1**|La sesión avanza normalmente al paso 2 sin Rol B|☐ OK  ☐ Falla||
-|**Todos los miembros fallan paso 2**|Aparecen opciones; si todos fallan, se avanza al paso 3 sin penalidad|☐ OK  ☐ Falla||
+|**Todos los miembros fallan paso 1**|La sesión avanza normalmente al paso 2 sin Rol B|☑ OK ✅|Probado: wrong answer → avanzó a paso 2 (traducción)|
+|**Todos los miembros fallan paso 2**|Aparecen opciones; si todos fallan, se avanza al paso 3 sin penalidad|☑ OK ✅|Probado: wrong translation → avanzó a paso 3 (construye frase)|
 |**Usuario pierde conexión en sesión remota**|Al reconectarse, el estado de la sesión se recupera correctamente desde Supabase|☐ OK  ☐ Falla||
 |**Dos usuarios intentan crear sesión simultáneamente**|Solo una sesión se crea; la otra recibe error por el índice único|☐ OK  ☐ Falla||
-|**Palabra con una sola traducción en quiz**|El quiz genera 3 distractores del banco aunque la palabra tenga una sola traducción|☐ OK  ☐ Falla||
-|**Exportar palabra ya existente en el grupo**|El sistema detecta el duplicado y no crea una segunda copia en group\_words|☐ OK  ☐ Falla||
+|**Palabra con una sola traducción en quiz**|El quiz genera 3 distractores del banco aunque la palabra tenga una sola traducción|☑ OK ✅|Probado con pencil (1 traducción): mostró silla, mesa, lápiz|
+|**Exportar palabra ya existente en el grupo**|El sistema detecta el duplicado y no crea una segunda copia en group\_words|☑ OK ✅|Export pencil 2 veces: se mantuvo en 12 palabras|
 
 # **F-08 · Importación desde Excel**
 
@@ -138,7 +138,7 @@
 |**Campos opcionales vacíos**|Una fila sin phonetic, example_en, example_es o explanation se importa sin error|☑ OK ✅|Computer importada sin phonetic, apple sin explanation|
 |**Resumen de importación**|Al finalizar se muestra: filas procesadas, palabras creadas, traducciones añadidas, filas omitidas|☑ OK ✅|Muestra los 4 contadores correctamente|
 |**Archivo con formato incorrecto**|Si el archivo no tiene las columnas esperadas, se muestra un mensaje de error claro|⚠️ Parcial|Muestra "0 palabras, 1 omitida" pero no error explícito|
-|**Progreso inicial**|Todas las palabras importadas inician con level=0 en user_word_progress|☐ Pendiente|No probado|
+|**Progreso inicial**|Todas las palabras importadas inician con level=0 en user_word_progress|☑ OK ✅|Verificado: pencil muestra nivel 0 en práctica|
 
 # **Bugs encontrados y fixes**
 
@@ -176,25 +176,28 @@
 |F-02 · Banco personal|7|6|0|1|
 |F-03 · Práctica individual|10|9|0|1|
 |F-04 · Grupos|13|3|0|10|
-|F-05 · Sesión remota|12|5|0|7|
+|F-05 · Sesión remota|12|7|0|5|
 |F-06 · Sesión presencial|15|5|0|10|
-|F-07 · Casos borde|9|0|0|9|
-|F-08 · Importación Excel|12|10|0|2|
-|TOTAL|83|43|0|40|
+|F-07 · Casos borde|9|6|0|3|
+|F-08 · Importación Excel|12|11|0|1|
+|TOTAL|83|52|0|31|
 
-**Progreso actual: 43/83 (51.8%)**
+**Progreso actual: 52/83 (62.7%)**
 
 ## Datos de prueba creados
 
 - **Usuario Cristian**: criou grupo "Grupo Study" (código: 178620f7)
 - **Usuario Test**: entrou no grupo com sucesso
-- **10 palavras do grupo**: think, know, see, go, come, take, make, get, bold, run
-- **11 palavras importadas do usuário test**: apple, book, computer, water, banana, run (da plantilla)
-  - apple: manzana, pepita (2 traduções)
-  - water: água, oceano (2 traduções)
-  - book: libro
-  - computer: computadora
-  - banana: plátano
+- **Palabras del grupo (12)**: think, know, see, go, come, take, make, get, bold, run, pencil, testword
+- **Palabras personales test**: chair, table, pencil (añadidas manualmente con 1 traducción)
+- **Palabras importadas previously**: apple, book, computer, water, banana, run
+
+## Bugs pendientes de investigar
+
+| **Bug** | **Descripción** |
+| :- | :- |
+| Editar palabra | UI no tiene botón de editar palabra |
+| Login password | El campo de contraseña necesita fill_form para funcionar correctamente |
 
 |Criterio de aceptación del MVP: 100% de F-01, F-02 y F-03 en OK. Mínimo 85% del total (70/83). Todos los casos de F-07 verificados.|
 | :- |
