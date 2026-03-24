@@ -176,13 +176,13 @@
 |F-02 · Banco personal|7|7|0|0|
 |F-03 · Práctica individual|10|10|0|0|
 |F-04 · Grupos|13|5|0|8|
-|F-05 · Sesión remota|12|9|0|3|
+|F-05 · Sesión remota|12|10|0|2|
 |F-06 · Sesión presencial|15|7|0|8|
 |F-07 · Casos borde|9|6|0|3|
 |F-08 · Importación Excel|12|12|0|0|
-|TOTAL|83|61|0|22|
+|TOTAL|83|62|0|21|
 
-**Progreso actual: 61/83 (73.5%)** - MVP: F-01✅ F-02✅ F-03✅
+**Progreso actual: 62/83 (74.7%)** - MVP: F-01✅ F-02✅ F-03✅
 
 **F-02 Completado: 7/7 ✅**
 **F-03 Completado: 10/10 ✅**
