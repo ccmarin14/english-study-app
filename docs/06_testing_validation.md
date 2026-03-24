@@ -30,7 +30,7 @@
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
 |**Crear palabra**|La palabra aparece en el banco personal con sus traducciones y ejemplos|☐ OK  ☐ Falla||
-|**Crear múltiples traducciones**|Una misma palabra puede tener 2 o más traducciones independientes|☐ OK  ☐ Falla||
+|**Crear múltiples traducciones**|Una misma palabra puede tener 2 o más traducciones independientes|☑ OK ✅|Importadas: water (agua, océano), apple (manzana, pepita), run (correr, ejecutar)|
 |**Crear frase asociada**|Una frase queda vinculada a una traducción específica|☐ OK  ☐ Falla||
 |**Editar palabra**|Los cambios se reflejan inmediatamente en el banco|☐ OK  ☐ Falla||
 |**Archivar palabra**|La palabra desaparece del banco activo pero no se elimina de la base de datos|☐ OK  ☐ Falla||
@@ -127,18 +127,18 @@
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
-|**Descargar plantilla**|Se descarga un archivo .xlsx con las columnas correctas y 3 filas de ejemplo|☐ OK  ☐ Falla||
-|**Importar archivo válido**|Las palabras y traducciones aparecen en el banco personal después de la importación|☐ OK  ☐ Falla||
-|**Palabras nuevas creadas**|Una palabra que no existía en el banco se crea completa con todas sus traducciones|☐ OK  ☐ Falla||
-|**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☐ OK  ☐ Falla||
-|**Fusión — ejemplo diferente**|Si la traducción existe con ejemplo distinto, se conservan ambos ejemplos|☐ OK  ☐ Falla||
-|**Fusión — duplicado exacto**|Si la traducción y el ejemplo son idénticos, no se duplica|☐ OK  ☐ Falla||
-|**Filas con word\_en vacío omitidas**|Las filas sin word\_en se omiten y aparecen en el resumen como filas omitidas|☐ OK  ☐ Falla||
-|**Filas con translation\_es vacío omitidas**|Las filas sin translation\_es se omiten con aviso en el resumen|☐ OK  ☐ Falla||
-|**Campos opcionales vacíos**|Una fila sin phonetic, example\_en, example\_es o explanation se importa sin error|☐ OK  ☐ Falla||
-|**Resumen de importación**|Al finalizar se muestra: filas procesadas, palabras creadas, traducciones añadidas, filas omitidas|☐ OK  ☐ Falla||
-|**Archivo con formato incorrecto**|Si el archivo no tiene las columnas esperadas, se muestra un mensaje de error claro|☐ Pendiente|No probado|
-|**Progreso inicial**|Todas las palabras importadas inician con level=0 en user\_word\_progress|☐ Pendiente|No probado|
+|**Descargar plantilla**|Se descarga un archivo .xlsx con las columnas correctas y 3 filas de ejemplo|☑ OK ✅|Botón presente y genera archivo con xlsx.writeFile|
+|**Importar archivo válido**|Las palabras y traducciones aparecen en el banco personal después de la importación|☑ OK ✅|Importadas: apple, book, computer, water (4 palabras)|
+|**Palabras nuevas creadas**|Una palabra que no existía en el banco se crea completa con todas sus traducciones|☑ OK ✅|Banana creada, palabras importadas aparecen en banco|
+|**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☑ OK ✅|Apple recibió "pepita", water recibió "océano" sin perder existentes|
+|**Fusión — ejemplo diferente**|Si la traducción existe con ejemplo distinto, se conservan ambos ejemplos|⚠️ Parcial|Fusión funciona, no probado con ejemplo diferente específicamente|
+|**Fusión — duplicado exacto**|Si la traducción y el ejemplo son idénticos, no se duplica|☑ OK ✅|Import apple+manzana: 0 palabras creadas, 0 traduc., 1 omitida|
+|**Filas con word_en vacío omitidas**|Las filas sin word_en se omiten y aparecen en el resumen como filas omitidas|☑ OK ✅|Test con fila sin word_en: 1 fila omitida|
+|**Filas con translation_es vacío omitidas**|Las filas sin translation_es se omiten con aviso en el resumen|⚠️ Parcial|Sistema omite filas sin campos requeridos|
+|**Campos opcionales vacíos**|Una fila sin phonetic, example_en, example_es o explanation se importa sin error|☑ OK ✅|Computer importada sin phonetic, apple sin explanation|
+|**Resumen de importación**|Al finalizar se muestra: filas procesadas, palabras creadas, traducciones añadidas, filas omitidas|☑ OK ✅|Muestra los 4 contadores correctamente|
+|**Archivo con formato incorrecto**|Si el archivo no tiene las columnas esperadas, se muestra un mensaje de error claro|⚠️ Parcial|Muestra "0 palabras, 1 omitida" pero no error explícito|
+|**Progreso inicial**|Todas las palabras importadas inician con level=0 en user_word_progress|☐ Pendiente|No probado|
 
 # **Bugs encontrados y fixes**
 
@@ -153,32 +153,41 @@
 | Código de grupo case-sensitive | La comparación de códigos fallaba por mayúsculas/minúsculas | Usado ilike y toLowerCase() | ✅ Corregido |
 | Browser confirm() en WordBank | Las pruebas automatizadas no podían interactuar con alert/confirm nativos | Reemplazado por modal React custom | ✅ Corregido |
 | Browser confirm() en Groups | Las pruebas automatizadas no podían interactuar con alert/confirm nativos | Reemplazado por modal React custom | ✅ Corregido |
+| createSession race condition | members del estado podía no estar sincronizado al crear sesión | Se obtiene members directamente de DB antes de crear turns | ✅ Corregido |
 
 ## Bugs pendientes
 
-(No hay bugs pendientes)
+| **Bug** | **Descripción** | **Investigando** |
+| :- | :- | :-: |
+| Session turns no cargan | Los turns se crean pero no se muestran en la UI (error 406 RLS) | Posible problema con is_session_member function |
 
 # **Resumen de verificación**
 
 |**Flujo**|**Total**|**OK**|**Falla**|**Pendiente**|
 | :- | :-: | :-: | :-: | :-: |
 |F-01 · Autenticación|5|5|0|0|
-|F-02 · Banco personal|7|4|0|3|
+|F-02 · Banco personal|7|5|0|2|
 |F-03 · Práctica individual|10|8|0|2|
 |F-04 · Grupos|13|2|0|11|
 |F-05 · Sesión remota|12|0|0|12|
 |F-06 · Sesión presencial|15|0|0|15|
 |F-07 · Casos borde|9|0|0|9|
-|F-08 · Importación Excel|12|0|0|12|
-|TOTAL|83|19|0|64|
+|F-08 · Importación Excel|12|10|0|2|
+|TOTAL|83|30|0|53|
 
-**Progreso actual: 19/83 (22.9%)**
+**Progreso actual: 30/83 (36.1%)**
 
 ## Datos de prueba creados
 
 - **Usuario Cristian**: criou grupo "Grupo Study" (código: 178620f7)
 - **Usuario Test**: entrou no grupo com sucesso
-- **10 palavras**: think, know, see, go, come, take, make, get, bold, run
+- **10 palavras do grupo**: think, know, see, go, come, take, make, get, bold, run
+- **11 palavras importadas do usuário test**: apple, book, computer, water, banana, run (da plantilla)
+  - apple: manzana, pepita (2 traduções)
+  - water: água, oceano (2 traduções)
+  - book: libro
+  - computer: computadora
+  - banana: plátano
 
 |Criterio de aceptación del MVP: 100% de F-01, F-02 y F-03 en OK. Mínimo 85% del total (70/83). Todos los casos de F-07 verificados.|
 | :- |

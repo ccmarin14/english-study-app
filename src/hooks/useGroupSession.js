@@ -106,6 +106,11 @@ export function useGroupSession(groupId) {
       wordsCopy.splice(wordsCopy.findIndex(w => w.id === selected.id), 1);
     }
 
+    const { data: currentMembers } = await supabase
+      .from('group_members')
+      .select('user_id')
+      .eq('group_id', groupId);
+
     const { data: newSession, error: sessionError } = await supabase
       .from('group_sessions')
       .insert({
@@ -120,11 +125,13 @@ export function useGroupSession(groupId) {
 
     if (sessionError) return { error: sessionError.message };
 
+    const memberIds = currentMembers?.map(m => m.user_id) || [];
+
     const turns = selectedWords.map((word, index) => ({
       session_id: newSession.id,
       group_word_id: word.id,
       turn_order: index + 1,
-      constructor_id: members[index % members.length]?.user_id,
+      constructor_id: memberIds[index % memberIds.length] || user.id,
       current_step: 1,
       status: 'active',
     }));
