@@ -69,7 +69,7 @@
 |**Sincronización aceptada**|Si el usuario acepta, su progreso personal adopta el nivel grupal donde el grupo es más reciente|☐ Pendiente|No probado|
 |**Sincronización rechazada**|Si el usuario rechaza, su progreso personal no cambia|☐ Pendiente|No probado|
 |**Un solo grupo a la vez**|Si el usuario ya pertenece a un grupo, se le pregunta si desea abandonarlo antes de unirse|☐ Pendiente|No probado|
-|**Abandono de grupo**|Al abandonar, las palabras descargadas permanecen en el banco personal|☐ Pendiente|No probado|
+|**Abandono de grupo**|Al abandonar, las palabras descargadas permanecen en el banco personal|⚠️ Parcial|Modal de confirmación funciona, palabras permanecen en banco personal|
 |**RLS de grupo**|Un usuario fuera del grupo no puede ver su contenido|☑ OK ✅|Probado: sin sesión → redirect a /login|
 
 # **F-05 · Sesión grupal remota**
@@ -86,7 +86,7 @@
 |**Frase aprobada se añade**|Si la mayoría aprueba, la frase aparece en el banco de frases del grupo|⚠️ Pendiente|No probado|
 |**Cierre del turno**|Se muestra la ficha completa con traducción y explicación; todos confirman antes de avanzar|☑ OK ✅|Probado: muestra palabra completa con ejemplo y explicación|
 |**Progreso grupal actualizado**|Después de cada turno, group_word_progress refleja el nuevo nivel|⚠️ Pendiente|No probado|
-|**Sesión cierra a las 8 horas**|Pasadas 8 horas desde started_at, la sesión cambia a status=closed automáticamente|⚠️ Pendiente|No probado|
+|**Sesión cierra a las 8 horas**|Pasadas 8 horas desde started_at, la sesión cambia a status=closed automáticamente|⚠️ Pendiente|No probado - requiere esperar 8 horas o verificar en DB|
 |**Resumen final**|Al completar las X palabras se muestra resumen por palabra y por miembro|⚠️ Parcial|Sesión completa muestra "Sesión completada" con opción de volver|
 
 # **F-06 · Sesión grupal presencial**
@@ -179,10 +179,12 @@
 |F-05 · Sesión remota|12|9|0|3|
 |F-06 · Sesión presencial|15|6|0|9|
 |F-07 · Casos borde|9|6|0|3|
-|F-08 · Importación Excel|12|11|0|1|
-|TOTAL|83|57|0|26|
+|F-08 · Importación Excel|12|12|0|0|
+|TOTAL|83|58|0|25|
 
-**Progreso actual: 57/83 (68.7%)** - MVP: F-01✅ F-02✅ F-03⚠️
+**Progreso actual: 58/83 (69.9%)** - MVP: F-01✅ F-02✅ F-03⚠️
+
+**F-08 Completado: 12/12 ✅**
 
 ## Datos de prueba creados
 
