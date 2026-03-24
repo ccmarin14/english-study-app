@@ -1,6 +1,6 @@
 import ProgressBar from './ProgressBar';
 
-export default function WordCard({ word, onClick, onArchive, showProgress = false }) {
+export default function WordCard({ word, onClick, onArchive, onExport, showProgress = false }) {
   const translations = word.word_translations || [];
 
   return (
@@ -43,17 +43,30 @@ export default function WordCard({ word, onClick, onArchive, showProgress = fals
         )}
       </div>
 
-      {onArchive && word.status === 'active' && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onArchive(word.id);
-          }}
-          className="mt-3 text-xs text-red-600 hover:text-red-700"
-        >
-          Archivar
-        </button>
-      )}
+      <div className="mt-3 flex gap-2">
+        {onExport && word.status === 'active' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onExport(word.id);
+            }}
+            className="text-xs text-indigo-600 hover:text-indigo-700"
+          >
+            📤 Exportar al grupo
+          </button>
+        )}
+        {onArchive && word.status === 'active' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onArchive(word.id);
+            }}
+            className="text-xs text-red-600 hover:text-red-700"
+          >
+            Archivar
+          </button>
+        )}
+      </div>
     </div>
   );
 }

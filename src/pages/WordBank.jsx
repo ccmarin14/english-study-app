@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWords } from '../hooks/useWords';
+import { useGroups } from '../hooks/useGroups';
+import { useGroupWords } from '../hooks/useGroupWords';
 import WordCard from '../components/WordCard';
 
 export default function WordBank() {
   const { words, loading, archiveWord } = useWords();
+  const { currentGroup } = useGroups();
+  const { exportWord, refetch: refetchGroupWords } = useGroupWords(currentGroup?.id);
   const [search, setSearch] = useState('');
   const [confirmArchive, setConfirmArchive] = useState(null);
+  const [exportSuccess, setExportSuccess] = useState(null);
   const navigate = useNavigate();
 
   const filteredWords = words.filter(word =>
@@ -24,6 +29,17 @@ export default function WordBank() {
     if (confirmArchive) {
       await archiveWord(confirmArchive);
       setConfirmArchive(null);
+    }
+  };
+
+  const handleExport = async (wordId) => {
+    const result = await exportWord(wordId);
+    if (result?.error) {
+      setExportSuccess(result.error);
+    } else {
+      setExportSuccess('Palabra exportada al grupo');
+      await refetchGroupWords();
+      setTimeout(() => setExportSuccess(null), 3000);
     }
   };
 
@@ -116,6 +132,7 @@ export default function WordBank() {
               word={word}
               onClick={() => handleWordClick(word)}
               onArchive={() => handleArchive(word.id)}
+              onExport={currentGroup ? () => handleExport(word.id) : null}
               showProgress
             />
           ))}
