@@ -65,7 +65,7 @@
 |**Fusión — traducción nueva**|Una traducción nueva de una palabra existente se añade sin borrar las otras|☑ OK ✅|Probado: book+texto añadido al grupo|
 |**Fusión — ejemplo diferente**|Si la traducción existe pero el ejemplo difiere, se conservan ambos ejemplos|☐ Pendiente|No probado|
 |**Fusión — ejemplo idéntico**|Si la traducción y el ejemplo son idénticos, no se duplica|☐ Pendiente|No probado|
-|**Progreso al unirse**|Todas las palabras descargadas inician con level=0 en group\_word\_progress|☐ Pendiente|No probado|
+|**Progreso al unirse**|Todas las palabras descargadas inician con level=0 en group\_word\_progress|⚠️ Pendiente|No probado - palabras ya tenían progreso de sesiones previas|
 |**Sincronización aceptada**|Si el usuario acepta, su progreso personal adopta el nivel grupal donde el grupo es más reciente|☐ Pendiente|No probado|
 |**Sincronización rechazada**|Si el usuario rechaza, su progreso personal no cambia|☐ Pendiente|No probado|
 |**Un solo grupo a la vez**|Si el usuario ya pertenece a un grupo, se le pregunta si desea abandonarlo antes de unirse|☐ Pendiente|No probado|
@@ -85,7 +85,7 @@
 |**Paso 3 — construcción de frase**|El constructor escribe una frase; los demás la califican con observación obligatoria si rechazan|⚠️ Parcial|UI permite escribir frase, requiere prueba con múltiples usuarios|
 |**Frase aprobada se añade**|Si la mayoría aprueba, la frase aparece en el banco de frases del grupo|⚠️ Pendiente|No probado|
 |**Cierre del turno**|Se muestra la ficha completa con traducción y explicación; todos confirman antes de avanzar|☑ OK ✅|Probado: muestra palabra completa con ejemplo y explicación|
-|**Progreso grupal actualizado**|Después de cada turno, group_word_progress refleja el nuevo nivel|⚠️ Pendiente|No probado|
+|**Progreso grupal actualizado**|Después de cada turno, group_word_progress refleja el nuevo nivel|⚠️ Pendiente|No probado - requiere verificar en DB|
 |**Sesión cierra a las 8 horas**|Pasadas 8 horas desde started_at, la sesión cambia a status=closed automáticamente|⚠️ Pendiente|No probado - requiere esperar 8 horas o verificar en DB|
 |**Resumen final**|Al completar las X palabras se muestra resumen por palabra y por miembro|⚠️ Parcial|Sesión completa muestra "Sesión completada" con opción de volver|
 
