@@ -177,12 +177,12 @@
 |F-03 · Práctica individual|10|9|0|1|
 |F-04 · Grupos|13|4|0|9|
 |F-05 · Sesión remota|12|8|0|4|
-|F-06 · Sesión presencial|15|5|0|10|
+|F-06 · Sesión presencial|15|6|0|9|
 |F-07 · Casos borde|9|6|0|3|
 |F-08 · Importación Excel|12|11|0|1|
-|TOTAL|83|55|0|28|
+|TOTAL|83|56|0|27|
 
-**Progreso actual: 55/83 (66.3%)**
+**Progreso actual: 56/83 (67.5%)**
 
 ## Datos de prueba creados
 
