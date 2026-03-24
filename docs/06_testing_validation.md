@@ -68,7 +68,7 @@
 |**Progreso al unirse**|Todas las palabras descargadas inician con level=0 en group\_word\_progress|⚠️ Pendiente|No probado - palabras ya tenían progreso de sesiones previas|
 |**Sincronización aceptada**|Si el usuario acepta, su progreso personal adopta el nivel grupal donde el grupo es más reciente|☐ Pendiente|No probado|
 |**Sincronización rechazada**|Si el usuario rechaza, su progreso personal no cambia|☐ Pendiente|No probado|
-|**Un solo grupo a la vez**|Si el usuario ya pertenece a un grupo, se le pregunta si desea abandonarlo antes de unirse|☐ Pendiente|No probado|
+|**Un solo grupo a la vez**|Si el usuario ya pertenece a un grupo, se le pregunta si desea abandonarlo antes de unirse|☑ OK ✅|Probado: muestra "Ya perteneces a un grupo"|
 |**Abandono de grupo**|Al abandonar, las palabras descargadas permanecen en el banco personal|⚠️ Parcial|Modal de confirmación funciona, palabras permanecen en banco personal|
 |**RLS de grupo**|Un usuario fuera del grupo no puede ver su contenido|☑ OK ✅|Probado: sin sesión → redirect a /login|
 
@@ -175,14 +175,14 @@
 |F-01 · Autenticación|5|5|0|0|
 |F-02 · Banco personal|7|7|0|0|
 |F-03 · Práctica individual|10|10|0|0|
-|F-04 · Grupos|13|5|0|8|
+|F-04 · Grupos|13|6|0|7|
 |F-05 · Sesión remota|12|10|0|2|
 |F-06 · Sesión presencial|15|7|0|8|
 |F-07 · Casos borde|9|6|0|3|
 |F-08 · Importación Excel|12|12|0|0|
-|TOTAL|83|62|0|21|
+|TOTAL|83|63|0|20|
 
-**Progreso actual: 62/83 (74.7%)** - MVP: F-01✅ F-02✅ F-03✅
+**Progreso actual: 63/83 (75.9%)** - MVP: F-01✅ F-02✅ F-03✅
 
 **F-02 Completado: 7/7 ✅**
 **F-03 Completado: 10/10 ✅**
