@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useWords } from '../hooks/useWords';
 import { useGroups } from '../hooks/useGroups';
+import { useGroupWords } from '../hooks/useGroupWords';
 
 export default function AddWord() {
   const navigate = useNavigate();
   const { addWord } = useWords();
   const { currentGroup } = useGroups();
+  const { exportWord } = useGroupWords(currentGroup?.id);
 
   const [word, setWord] = useState({
     word_en: '',
@@ -62,7 +64,7 @@ export default function AddWord() {
 
     setLoading(true);
 
-    const { error: addError } = await addWord({
+    const { data: newWord, error: addError } = await addWord({
       word_en: word.word_en.trim(),
       phonetic: word.phonetic.trim() || null,
       translations: validTranslations,
@@ -72,6 +74,10 @@ export default function AddWord() {
       setError(addError.message);
       setLoading(false);
       return;
+    }
+
+    if (exportToGroup && currentGroup && newWord) {
+      await exportWord(newWord.id);
     }
 
     navigate('/word-bank');
