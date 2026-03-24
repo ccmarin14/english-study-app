@@ -35,7 +35,7 @@
 |**Editar palabra**|Los cambios se reflejan inmediatamente en el banco|☐ Pendiente|No implementado en UI|
 |**Archivar palabra**|La palabra desaparece del banco activo pero no se elimina de la base de datos|☑ OK ✅|Probado: chair archivado - desapareció del banco activo|
 |**Exportar al grupo al crear**|Si el usuario pertenece a un grupo y marca la opción, la palabra aparece en el banco del grupo|☑ OK ✅|Probado: sunrise exportado al crear - apareció en grupo|
-|**Otro usuario no ve mis palabras**|Las palabras personales no son visibles para otros usuarios (verificar RLS)|☐ OK  ☐ Falla||
+|**Otro usuario no ve mis palabras**|Las palabras personales no son visibles para otros usuarios (verificar RLS)|☑ OK ✅|Probado: sin sesión → redirect a /login|
 
 # **F-03 · Práctica individual**
 
@@ -184,6 +184,7 @@
 
 **Progreso actual: 60/83 (72.3%)** - MVP: F-01✅ F-02✅ F-03✅
 
+**F-02 Completado: 7/7 ✅**
 **F-03 Completado: 10/10 ✅**
 **F-08 Completado: 12/12 ✅**
 
