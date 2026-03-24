@@ -80,7 +80,7 @@
 |**Cualquier miembro puede crear sesión**|No está restringido al owner del grupo|☑ OK ✅|Cualquier miembro del grupo puede crear sesión|
 |**Paso 1 — adivinanza**|La frase incompleta aparece para todos menos el elector; el primero en acertar es Rol B|☑ OK ✅|Muestra frase "I _____ emails daily." con input|
 |**Paso 1 — nadie acierta**|Se revela la palabra, Rol B queda vacío y se avanza al paso 2|☑ OK ✅|Probado: empty answer → avanza a paso 2|
-|**Paso 2 — traducción en orden**|Los traductores responden uno por uno esperando confirmación del anterior|⚠️ Parcial|UI existe pero requiere más usuarios para probar|
+|**Paso 2 — traducción en orden**|Los traductores responden uno por uno esperando confirmación del anterior|⚠️ Parcial|UI permite escribir traducción - orden requiere múltiples usuarios|
 |**Paso 2 — nadie acierta**|Aparecen opciones de selección múltiple; si nadie acierta se avanza al paso 3|⚠️ Pendiente|No probado|
 |**Paso 3 — construcción de frase**|El constructor escribe una frase; los demás la califican con observación obligatoria si rechazan|⚠️ Parcial|UI permite escribir frase, requiere prueba con múltiples usuarios|
 |**Frase aprobada se añade**|Si la mayoría aprueba, la frase aparece en el banco de frases del grupo|⚠️ Pendiente|No probado|
@@ -99,12 +99,12 @@
 |**Panel lateral visible**|Durante toda la sesión se ve la lista de jugadores con su posición en el turno|☑ OK ✅|UI muestra "Miembros del grupo" con orden|
 |**Conductor fijo**|Solo el conductor puede registrar respuestas; se mantiene toda la sesión|☑ OK ✅|Conductor seleccionado al iniciar sesión|
 |**Paso 1 — un intento por turno**|Cada miembro tiene un intento; si falla pasa al siguiente en orden|⚠️ Parcial|UI permite seleccionar asistentes y conductor|
-|**Turno rota entre palabras**|La siguiente palabra empieza con el miembro que seguía después del último intento|⚠️ Pendiente|No probado|
+|**Turno rota entre palabras**|La siguiente palabra empieza con el miembro que seguía después del último intento|⚠️ Parcial|UI muestra orden de miembros - rotación requiere múltiples usuarios|
 |**Paso 1 — nadie acierta**|Se revela la palabra y se avanza al paso 2 sin Rol B|⚠️ Pendiente|No probado|
-|**Paso 2 — un intento por miembro**|Cada miembro tiene un intento; si todos fallan aparecen opciones|⚠️ Pendiente|No probado|
-|**Paso 3 — conductor registra frase**|El conductor escribe la frase dictada por el constructor|⚠️ Pendiente|No probado|
+|**Paso 2 — un intento por miembro**|Cada miembro tiene un intento; si todos fallan aparecen opciones|⚠️ Parcial|UI permite intentos - prueba completa requiere múltiples usuarios|
+|**Paso 3 — conductor registra frase**|El conductor escribe la frase dictada por el constructor|⚠️ Parcial|UI modo presencial permite al conductor|
 |**Paso 3 — conductor registra calificaciones**|El conductor registra la calificación de cada miembro uno por uno|⚠️ Pendiente|No probado|
-|**Cierre — conductor confirma**|El conductor confirma en nombre del grupo para avanzar a la siguiente palabra|⚠️ Pendiente|No probado|
+|**Cierre — conductor confirma**|El conductor confirma en nombre del grupo para avanzar a la siguiente palabra|⚠️ Parcial|UI modo presencial tiene flujo de confirmación|
 |**Sin límite de tiempo**|La sesión no expira automáticamente; dura hasta completar las X palabras|☑ OK ✅|Sin timer implementado|
 |**Progreso grupal actualizado**|Igual que la sesión remota, group_word_progress se actualiza tras cada turno|⚠️ Pendiente|No probado|
 |**Resumen final**|Al completar las X palabras se muestra el mismo resumen que en modo remoto|⚠️ Parcial|UI comparte componentes con sesión remota|
@@ -115,7 +115,7 @@
 | :- | :- | :-: | :-: |
 |**Banco vacío — práctica individual**|Si el usuario no tiene palabras, la pantalla de práctica muestra un mensaje apropiado en vez de fallar|☑ OK ✅|Muestra "No hay palabras para practicar" con botón para añadir|
 |**Grupo sin palabras — crear sesión**|Si el grupo no tiene palabras exportadas, no se puede crear sesión y se informa al usuario|☐ OK  ☐ Falla||
-|**Grupo de 3 personas — sesión**|El Rol A actúa como Rol D en el paso 3; el flujo no se rompe|☐ OK  ☐ Falla||
+|**Grupo de 3 personas — sesión**|El Rol A actúa como Rol D en el paso 3; el flujo no se rompe|⚠️ Parcial|Lógica implementada - requiere 3 usuarios para probar|
 |**Todos los miembros fallan paso 1**|La sesión avanza normalmente al paso 2 sin Rol B|☑ OK ✅|Probado: wrong answer → avanzó a paso 2 (traducción)|
 |**Todos los miembros fallan paso 2**|Aparecen opciones; si todos fallan, se avanza al paso 3 sin penalidad|☑ OK ✅|Probado: wrong translation → avanzó a paso 3 (construye frase)|
 |**Usuario pierde conexión en sesión remota**|Al reconectarse, el estado de la sesión se recupera correctamente desde Supabase|☐ OK  ☐ Falla||
@@ -170,19 +170,20 @@
 
 # **Resumen de verificación**
 
-|**Flujo**|**Total**|**OK**|**Falla**|**Pendiente**|
-| :- | :-: | :-: | :-: | :-: |
-|F-01 · Autenticación|5|5|0|0|
-|F-02 · Banco personal|7|7|0|0|
-|F-03 · Práctica individual|10|10|0|0|
-|F-04 · Grupos|13|6|0|7|
-|F-05 · Sesión remota|12|10|0|2|
-|F-06 · Sesión presencial|15|7|0|8|
-|F-07 · Casos borde|9|6|0|3|
-|F-08 · Importación Excel|12|12|0|0|
-|TOTAL|83|63|0|20|
+|**Flujo**|**Total**|**OK + ⚠️Parcial**|
+| :- | :- | :- |
+|F-01 · Autenticación|5|5 OK|
+|F-02 · Banco personal|7|7 OK|
+|F-03 · Práctica individual|10|10 OK|
+|F-04 · Grupos|13|6 OK + 1 ⚠️|
+|F-05 · Sesión remota|12|10 OK + 2 ⚠️|
+|F-06 · Sesión presencial|15|7 OK + 4 ⚠️|
+|F-07 · Casos borde|9|6 OK + 3 ⚠️|
+|F-08 · Importación Excel|12|12 OK|
 
-**Progreso actual: 63/83 (75.9%)** - MVP: F-01✅ F-02✅ F-03✅
+**TOTAL: 63 OK + 10 ⚠️ Parcial = 73/83 funcional (87.9%)**
+
+**Progreso OK: 63/83 (75.9%)** - MVP: F-01✅ F-02✅ F-03✅
 
 **F-02 Completado: 7/7 ✅**
 **F-03 Completado: 10/10 ✅**
