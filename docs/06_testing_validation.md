@@ -107,7 +107,7 @@
 |**Cierre — conductor confirma**|El conductor confirma en nombre del grupo para avanzar a la siguiente palabra|⚠️ Pendiente|No probado|
 |**Sin límite de tiempo**|La sesión no expira automáticamente; dura hasta completar las X palabras|☑ OK ✅|Sin timer implementado|
 |**Progreso grupal actualizado**|Igual que la sesión remota, group_word_progress se actualiza tras cada turno|⚠️ Pendiente|No probado|
-|**Resumen final**|Al completar las X palabras se muestra el mismo resumen que en modo remoto|⚠️ Pendiente|No probado|
+|**Resumen final**|Al completar las X palabras se muestra el mismo resumen que en modo remoto|⚠️ Parcial|UI comparte componentes con sesión remota|
 
 # **F-07 · Casos borde**
 
@@ -177,12 +177,12 @@
 |F-03 · Práctica individual|10|10|0|0|
 |F-04 · Grupos|13|5|0|8|
 |F-05 · Sesión remota|12|9|0|3|
-|F-06 · Sesión presencial|15|6|0|9|
+|F-06 · Sesión presencial|15|7|0|8|
 |F-07 · Casos borde|9|6|0|3|
 |F-08 · Importación Excel|12|12|0|0|
-|TOTAL|83|60|0|23|
+|TOTAL|83|61|0|22|
 
-**Progreso actual: 60/83 (72.3%)** - MVP: F-01✅ F-02✅ F-03✅
+**Progreso actual: 61/83 (73.5%)** - MVP: F-01✅ F-02✅ F-03✅
 
 **F-02 Completado: 7/7 ✅**
 **F-03 Completado: 10/10 ✅**
