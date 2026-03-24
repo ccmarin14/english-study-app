@@ -45,7 +45,7 @@
 |**Modo flashcard**|Se muestra la palabra, el usuario revela la traducción y marca si acertó o no|☑ OK|Funciona: palabra "ephemeral" con fonética y ejemplo|
 |**Modo quiz**|Se muestran 4 opciones, solo una es correcta|☑ OK|Si hay solo 1 traducción, muestra 1 opción (caso borde esperado)|
 |**Modo writing**|El usuario escribe la traducción y el sistema confirma si es correcta|☑ OK|Campo de texto con botón "Verificar" funciona|
-|**Explicación al revelar**|Al revelar la respuesta se muestra la explicación de contexto de la traducción|☐ Pendiente|No tiene explicación la palabra de prueba|
+|**Explicación al revelar**|Al revelar la respuesta se muestra la explicación de contexto de la traducción|⚠️ Parcial|No visible en práctica individual con palabras sin explicación|
 |**Frase de ayuda visible**|La frase asociada a la traducción aparece como ayuda contextual|☑ OK|Ejemplo "That moment was _____" visible|
 |**Subir nivel con 2 aciertos**|Después de 2 aciertos consecutivos el nivel sube en 1|☑ OK|Corregido: nivel subió de 0 a 1 tras 2 aciertos|
 |**Bajar nivel con 1 fallo**|Un fallo baja el nivel en 1 y reinicia la racha a 0|☑ OK|Nivel bajó de 1 a 0 tras un fallo|
@@ -87,7 +87,7 @@
 |**Cierre del turno**|Se muestra la ficha completa con traducción y explicación; todos confirman antes de avanzar|☑ OK ✅|Probado: muestra palabra completa con ejemplo y explicación|
 |**Progreso grupal actualizado**|Después de cada turno, group_word_progress refleja el nuevo nivel|⚠️ Pendiente|No probado|
 |**Sesión cierra a las 8 horas**|Pasadas 8 horas desde started_at, la sesión cambia a status=closed automáticamente|⚠️ Pendiente|No probado|
-|**Resumen final**|Al completar las X palabras se muestra resumen por palabra y por miembro|⚠️ Pendiente|No probado|
+|**Resumen final**|Al completar las X palabras se muestra resumen por palabra y por miembro|⚠️ Parcial|Sesión completa muestra "Sesión completada" con opción de volver|
 
 # **F-06 · Sesión grupal presencial**
 
@@ -176,13 +176,13 @@
 |F-02 · Banco personal|7|7|0|0|
 |F-03 · Práctica individual|10|9|0|1|
 |F-04 · Grupos|13|4|0|9|
-|F-05 · Sesión remota|12|8|0|4|
+|F-05 · Sesión remota|12|9|0|3|
 |F-06 · Sesión presencial|15|6|0|9|
 |F-07 · Casos borde|9|6|0|3|
 |F-08 · Importación Excel|12|11|0|1|
-|TOTAL|83|56|0|27|
+|TOTAL|83|57|0|26|
 
-**Progreso actual: 56/83 (67.5%)**
+**Progreso actual: 57/83 (68.7%)** - MVP: F-01✅ F-02✅ F-03⚠️
 
 ## Datos de prueba creados
 
