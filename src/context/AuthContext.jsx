@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext({});
@@ -7,64 +8,47 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const loadingRef = useRef(true);
-  const initializedRef = useRef(false);
+  const pendingRedirectRef = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
-    const initAuth = async () => {
+    const fetchProfile = async (userId) => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
         
-        if (session?.user) {
-          setUser(session.user);
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          if (!error && data) {
-            setProfile(data);
-          }
-        } else {
-          setUser(null);
-          setProfile(null);
+        if (!error && data) {
+          setProfile(data);
         }
       } catch (err) {
-        console.error('Auth init error:', err);
-      } finally {
-        setLoading(false);
-        loadingRef.current = false;
+        console.error('Error fetching profile:', err);
       }
     };
-
-    initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_OUT') {
           setUser(null);
           setProfile(null);
+          pendingRedirectRef.current = false;
           setLoading(false);
-          loadingRef.current = false;
           return;
         }
 
         if (session?.user) {
           setUser(session.user);
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+          fetchProfile(session.user.id);
           
-          if (!error && data) {
-            setProfile(data);
+          if (pendingRedirectRef.current) {
+            pendingRedirectRef.current = false;
+            navigate('/dashboard');
           }
         }
+        
+        setLoading(false);
       }
     );
 
@@ -75,7 +59,10 @@ export function AuthProvider({ children }) {
     user,
     profile,
     loading,
-    signInWithPassword: (email, password) => supabase.auth.signInWithPassword({ email, password }),
+    signInWithPassword: async (email, password) => {
+      pendingRedirectRef.current = true;
+      return supabase.auth.signInWithPassword({ email, password });
+    },
     signOut: () => supabase.auth.signOut(),
     isAuthenticated: !!user,
   };

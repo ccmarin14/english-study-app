@@ -148,12 +148,15 @@ No modificar el schema sin crear un nuevo archivo de migración.
 
 ---
 
-## Cuándo preguntar antes de actuar
+## Patrones de debugging
 
-- Si un requerimiento parece contradecirse con otro documento
-- Si una query necesita acceder a datos de un usuario diferente al autenticado
-- Si se necesita una tabla o campo que no está en el schema
-- Si la lógica de un paso de sesión grupal no está clara en el System Design
+**Flujo completo**: Verificar el camino desde el origen de datos hasta el render final. Si algo falla, empezar por el origen.
+
+**Un mecanismo por responsabilidad**: Si dos mecanismos hacen lo mismo, pueden competir. Consolidar en uno solo.
+
+**Callbacks async seguros**: No bloquear el flujo con `await` en queries secundarias. Mantener estados de carga fuera de bloques que puedan fallar.
+
+**Verificar antes de asumir**: Usar herramientas de diagnóstico (logs, network, DOM) antes de concluir la causa de un error.
 
 ---
 
@@ -163,4 +166,4 @@ No modificar el schema sin crear un nuevo archivo de migración.
 - No saltarse la lógica de RLS filtrando manualmente por `user_id` en el cliente
 - No mezclar lógica de negocio en componentes de UI
 - No usar `useEffect` para mutaciones — solo para lecturas
-- No implementar email/password — solo Google OAuth
+- **No hacer cambios de código sin explicar primero qué pasa y por qué**

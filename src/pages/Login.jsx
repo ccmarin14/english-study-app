@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
@@ -8,14 +7,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', content: '' });
   const { signInWithPassword } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const savedEmail = localStorage.getItem('savedEmail');
-    if (savedEmail) {
-      setEmail(savedEmail);
-    }
-  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -32,11 +23,8 @@ export default function Login() {
 
     if (error) {
       setMessage({ type: 'error', content: error.message });
-      setLoading(false);
-    } else {
-      localStorage.setItem('savedEmail', email);
-      navigate('/dashboard');
     }
+    setLoading(false);
   }
 
   return (
