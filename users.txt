@@ -1,7 +1,0 @@
-Usuario: cristiancamilomarinflorez@gmail.com
-Contraseña: wz15h389faz
-Tipo: Admin
-
-Usuario: test@gmail.com
-Contraseña: 3104570950
-Tipo: User
