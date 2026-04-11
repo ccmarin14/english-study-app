@@ -6,11 +6,12 @@ import { useGroupWords } from '../hooks/useGroupWords';
 import WordCard from '../components/WordCard';
 
 export default function WordBank() {
-  const { words, loading, archiveWord, fetchArchivedWords, unarchiveWord, refetch } = useWords();
+  const { words, loading, archiveWord, fetchArchivedWords, unarchiveWord, refetch, deleteAllUserWords } = useWords();
   const { currentGroup } = useGroups();
   const { exportWord, refetch: refetchGroupWords } = useGroupWords(currentGroup?.id);
   const [search, setSearch] = useState('');
   const [confirmArchive, setConfirmArchive] = useState(null);
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(null);
   const [exportSuccess, setExportSuccess] = useState(null);
   const [showArchived, setShowArchived] = useState(false);
   const navigate = useNavigate();
@@ -61,6 +62,16 @@ export default function WordBank() {
     navigate('/edit-word', { state: { selectedWord: word, isFromArchive: showArchived } });
   };
 
+  const handleDeleteAll = async () => {
+    const result = await deleteAllUserWords();
+    if (result?.error) {
+      console.error('Error al eliminar palabras:', result.error);
+    } else {
+      setConfirmDeleteAll(null);
+      await refetch();
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -104,6 +115,33 @@ export default function WordBank() {
         </div>
       )}
 
+      {confirmDeleteAll && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold mb-4">
+              ¿Eliminar todas las palabras?
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Se eliminarán {words.length} palabras y todo su progreso. Esta acción no se puede deshacer.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setConfirmDeleteAll(null)}
+                className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteAll}
+                className="flex-1 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap justify-between items-center gap-3">
         <h1 className="text-xl font-bold text-gray-900">
           {showArchived ? 'Palabras Archivadas' : 'Banco de Palabras'}
@@ -117,6 +155,14 @@ export default function WordBank() {
           </button>
           {!showArchived && (
             <>
+              {words.length > 0 && (
+                <button
+                  onClick={() => setConfirmDeleteAll(true)}
+                  className="px-3 py-2 text-sm text-red-600 border border-red-600 rounded-lg hover:bg-red-50"
+                >
+                  🗑️ Eliminar todo
+                </button>
+              )}
               <button
                 onClick={() => navigate('/import')}
                 className="px-3 py-2 text-sm text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"

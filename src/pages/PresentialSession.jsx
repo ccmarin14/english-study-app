@@ -286,7 +286,7 @@ export default function PresentialSession() {
                       Paso 1: Adivinanza
                     </span>
                     <p className="text-2xl text-gray-700 mt-2 italic">
-                      "{translations[0]?.example_en?.replace(
+                      "{translations[0]?.examples_en?.[0]?.replace(
                         new RegExp(currentWord.word_en, 'gi'),
                         '_____'
                       ) || '...'}"

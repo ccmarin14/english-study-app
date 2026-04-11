@@ -33,8 +33,9 @@ export default function GroupSession() {
     ? translations[Math.floor(Math.random() * translations.length)]
     : null;
 
-  const incompleteExample = randomTranslation?.example_en
-    ? randomTranslation.example_en.replace(
+  const firstExample = randomTranslation?.examples_en?.[0];
+  const incompleteExample = firstExample
+    ? firstExample.replace(
         new RegExp(currentWord.word_en, 'gi'),
         '_____'
       )
@@ -306,8 +307,8 @@ export default function GroupSession() {
                   {translations.map((t, i) => (
                     <div key={i} className="p-4 bg-gray-50 rounded-lg">
                       <p className="font-medium text-lg">{t.translation_es}</p>
-                      {t.example_en && (
-                        <p className="text-gray-600 text-sm mt-2 italic">"{t.example_en}"</p>
+                      {t.examples_en?.[0] && (
+                        <p className="text-gray-600 text-sm mt-2 italic">"{t.examples_en[0]}"</p>
                       )}
                       {t.explanation && (
                         <p className="text-yellow-700 text-sm mt-2 bg-yellow-50 p-2 rounded">

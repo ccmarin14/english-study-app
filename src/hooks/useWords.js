@@ -51,8 +51,8 @@ export function useWords() {
       const translations = wordData.translations.map(t => ({
         word_id: data.id,
         translation_es: t.translation_es,
-        example_en: t.example_en || null,
-        example_es: t.example_es || null,
+        examples_en: t.examples_en ? t.examples_en.filter(e => e.trim()) : [],
+        examples_es: t.examples_es ? t.examples_es.filter(e => e.trim()) : [],
         explanation: t.explanation || null,
       }));
 
@@ -87,8 +87,8 @@ export function useWords() {
             .from('word_translations')
             .update({
               translation_es: trans.translation_es,
-              example_en: trans.example_en || null,
-              example_es: trans.example_es || null,
+              examples_en: trans.examples_en ? trans.examples_en.filter(e => e.trim()) : [],
+              examples_es: trans.examples_es ? trans.examples_es.filter(e => e.trim()) : [],
               explanation: trans.explanation || null,
             })
             .eq('id', trans.id);
@@ -100,8 +100,8 @@ export function useWords() {
             .insert({
               word_id: wordId,
               translation_es: trans.translation_es,
-              example_en: trans.example_en || null,
-              example_es: trans.example_es || null,
+              examples_en: trans.examples_en ? trans.examples_en.filter(e => e.trim()) : [],
+              examples_es: trans.examples_es ? trans.examples_es.filter(e => e.trim()) : [],
               explanation: trans.explanation || null,
             });
 
@@ -178,14 +178,35 @@ export function useWords() {
       .insert({
         word_id: wordId,
         translation_es: translation.translation_es,
-        example_en: translation.example_en || null,
-        example_es: translation.example_es || null,
+        examples_en: translation.examples_en ? translation.examples_en.filter(e => e.trim()) : [],
+        examples_es: translation.examples_es ? translation.examples_es.filter(e => e.trim()) : [],
         explanation: translation.explanation || null,
       });
 
     if (error) return { error };
 
     await fetchWords();
+    return { success: true };
+  }
+
+  async function deleteAllUserWords() {
+    if (!user) return { error: 'No user' };
+
+    const { error: progressError } = await supabase
+      .from('user_word_progress')
+      .delete()
+      .eq('user_id', user.id);
+
+    if (progressError) return { error: progressError };
+
+    const { error: wordsError } = await supabase
+      .from('words')
+      .delete()
+      .eq('owner_id', user.id);
+
+    if (wordsError) return { error: wordsError };
+
+    setWords([]);
     return { success: true };
   }
 
@@ -201,5 +222,6 @@ export function useWords() {
     unarchiveWord,
     deleteTranslation,
     addTranslation,
+    deleteAllUserWords,
   };
 }

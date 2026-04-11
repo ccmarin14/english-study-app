@@ -14,8 +14,7 @@
     "@supabase/supabase-js": "^2.99.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1",
-    "xlsx": "^0.18.5"
+    "react-router-dom": "^7.13.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
@@ -32,7 +31,8 @@
     "postcss": "^8.5.8",
     "supabase": "^2.82.0",
     "tailwindcss": "^4.2.2",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "xlsx": "^0.18.5"
   },
   "homepage": "https://ccmarin14.github.io/english-study-app"
 }

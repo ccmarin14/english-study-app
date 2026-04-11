@@ -195,6 +195,14 @@ Un solo dispositivo compartido. Un conductor maneja el teclado durante toda la s
 - Por miembro: cantidad de respuestas correctas sobre el total
 - Palabra más difícil y palabra más fácil del grupo en esa sesión
 
+## RF-12 · Eliminar banco personal completo
+- El usuario puede eliminar TODAS sus palabras, traducciones y progreso individual
+- La acción está disponible en el menú del banco de palabras
+- Se requiere confirmación antes de ejecutar
+- La confirmación muestra la cantidad de palabras que se eliminarán
+- Los grupos, palabras exportadas a grupos y progreso grupal NO se ven afectados
+- El usuario es redirigido al banco vacío tras la eliminación
+
 # **2. Requerimientos No Funcionales**
 ## **RNF-01 · Stack tecnológico**
 - Frontend: React + Vite

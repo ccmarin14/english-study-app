@@ -13,7 +13,7 @@ export default function AddWord() {
   const [word, setWord] = useState({
     word_en: '',
     phonetic: '',
-    translations: [{ translation_es: '', example_en: '', example_es: '', explanation: '' }],
+    translations: [{ translation_es: '', examples: [{ en: '', es: '' }], explanation: '' }],
   });
   const [exportToGroup, setExportToGroup] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -24,17 +24,8 @@ export default function AddWord() {
       ...prev,
       translations: [
         ...prev.translations,
-        { translation_es: '', example_en: '', example_es: '', explanation: '' },
+        { translation_es: '', examples: [{ en: '', es: '' }], explanation: '' },
       ],
-    }));
-  };
-
-  const updateTranslation = (index, field, value) => {
-    setWord(prev => ({
-      ...prev,
-      translations: prev.translations.map((t, i) =>
-        i === index ? { ...t, [field]: value } : t
-      ),
     }));
   };
 
@@ -45,6 +36,53 @@ export default function AddWord() {
         translations: prev.translations.filter((_, i) => i !== index),
       }));
     }
+  };
+
+  const updateTranslationField = (index, field, value) => {
+    setWord(prev => ({
+      ...prev,
+      translations: prev.translations.map((t, i) =>
+        i === index ? { ...t, [field]: value } : t
+      ),
+    }));
+  };
+
+  const addExample = (transIndex) => {
+    setWord(prev => ({
+      ...prev,
+      translations: prev.translations.map((t, i) =>
+        i === transIndex
+          ? { ...t, examples: [...t.examples, { en: '', es: '' }] }
+          : t
+      ),
+    }));
+  };
+
+  const updateExample = (transIndex, exampleIndex, field, value) => {
+    setWord(prev => ({
+      ...prev,
+      translations: prev.translations.map((t, i) =>
+        i === transIndex
+          ? {
+              ...t,
+              examples: t.examples.map((ex, idx) =>
+                idx === exampleIndex ? { ...ex, [field]: value } : ex
+              ),
+            }
+          : t
+      ),
+    }));
+  };
+
+  const removeExample = (transIndex, exampleIndex) => {
+    setWord(prev => ({
+      ...prev,
+      translations: prev.translations.map((t, i) =>
+        i === transIndex
+          ? { ...t, examples: t.examples.filter((_, idx) => idx !== exampleIndex) }
+          : t
+      ),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -64,10 +102,17 @@ export default function AddWord() {
 
     setLoading(true);
 
+    const translationsToSave = validTranslations.map(t => ({
+      translation_es: t.translation_es,
+      examples_en: t.examples.filter(e => e.en.trim()).map(e => e.en.trim()),
+      examples_es: t.examples.filter(e => e.es.trim()).map(e => e.es.trim()),
+      explanation: t.explanation || null,
+    }));
+
     const { data: newWord, error: addError } = await addWord({
       word_en: word.word_en.trim(),
       phonetic: word.phonetic.trim() || null,
-      translations: validTranslations,
+      translations: translationsToSave,
     });
 
     if (addError) {
@@ -145,37 +190,52 @@ export default function AddWord() {
                     <input
                       type="text"
                       value={translation.translation_es}
-                      onChange={(e) => updateTranslation(index, 'translation_es', e.target.value)}
+                      onChange={(e) => updateTranslationField(index, 'translation_es', e.target.value)}
                       placeholder="ej: efímero"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Ejemplo en inglés
-                      </label>
-                      <input
-                        type="text"
-                        value={translation.example_en}
-                        onChange={(e) => updateTranslation(index, 'example_en', e.target.value)}
-                        placeholder="ej: That moment was ephemeral..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        Ejemplo en español
-                      </label>
-                      <input
-                        type="text"
-                        value={translation.example_es}
-                        onChange={(e) => updateTranslation(index, 'example_es', e.target.value)}
-                        placeholder="ej: Ese momento fue efímero..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-xs text-gray-500 mb-2">
+                      Ejemplos (frases)
+                    </label>
+                    {translation.examples.map((ex, exIdx) => (
+                      <div key={exIdx} className="mb-4 p-3 bg-gray-50 rounded-lg">
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            value={ex.en}
+                            onChange={(e) => updateExample(index, exIdx, 'en', e.target.value)}
+                            placeholder="Inglés: The moment was ephemeral..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            value={ex.es}
+                            onChange={(e) => updateExample(index, exIdx, 'es', e.target.value)}
+                            placeholder="Español: El momento fue efímero..."
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        {translation.examples.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeExample(index, exIdx)}
+                            className="text-red-500 hover:text-red-600 text-xs mt-2 flex items-center gap-1"
+                          >
+                            🗑️ Eliminar
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => addExample(index)}
+                      className="text-indigo-600 hover:text-indigo-700 text-xs"
+                    >
+                      ➕ Añadir ejemplo
+                    </button>
                   </div>
 
                   <div>
@@ -184,7 +244,7 @@ export default function AddWord() {
                     </label>
                     <textarea
                       value={translation.explanation}
-                      onChange={(e) => updateTranslation(index, 'explanation', e.target.value)}
+                      onChange={(e) => updateTranslationField(index, 'explanation', e.target.value)}
                       placeholder="ej: Describe algo que dura muy poco tiempo"
                       rows={2}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"

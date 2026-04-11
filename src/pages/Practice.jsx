@@ -141,10 +141,10 @@ export default function Practice() {
                   )}
                 </div>
 
-                {currentWord.word_translations?.[0]?.example_en && (
+                {currentWord.word_translations?.[0]?.examples_en?.[0] && (
                   <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                     <p className="text-gray-600 italic">
-                      "{currentWord.word_translations[0].example_en.replace(
+                      "{currentWord.word_translations[0].examples_en[0].replace(
                         new RegExp(currentWord.word_en, 'gi'),
                         '_____'
                       )}"
@@ -197,10 +197,10 @@ export default function Practice() {
                   <h2 className="text-3xl font-bold text-gray-900">{currentWord.word_en}</h2>
                 </div>
 
-                {currentWord.word_translations?.[0]?.example_en && (
+                {currentWord.word_translations?.[0]?.examples_en?.[0] && (
                   <div className="p-4 bg-gray-50 rounded-lg mb-6">
                     <p className="text-gray-600 italic">
-                      "{currentWord.word_translations[0].example_en.replace(
+                      "{currentWord.word_translations[0].examples_en[0].replace(
                         new RegExp(currentWord.word_en, 'gi'),
                         '_____'
                       )}"

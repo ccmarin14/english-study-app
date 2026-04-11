@@ -264,6 +264,11 @@
 |<p>// Generar y descargar plantilla desde el cliente</p><p>import \* as XLSX from 'xlsx';</p><p></p><p>export function downloadTemplate() {</p><p>`  `const headers = [</p><p>`    `'word\_en', 'phonetic', 'translation\_es',</p><p>`    `'example\_en', 'example\_es', 'explanation'</p><p>`  `];</p><p>`  `const examples = [</p><p>`    `['run',  '/rʌn/', 'correr',   'She runs every morning.',</p><p>`     `'Ella corre cada mañana.', 'Uso físico, movimiento.'],</p><p>`    `['run',  '/rʌn/', 'ejecutar', 'Run the program again.',</p><p>`     `'Ejecuta el programa de nuevo.', 'Uso técnico.'],</p><p>`    `['bold', '',      'audaz',    'He made a bold decision.',</p><p>`     `'Tomó una decisión audaz.', 'Describe valentía o atrevimiento.'],</p><p>`  `];</p><p>`  `const ws = XLSX.utils.aoa\_to\_sheet([headers, ...examples]);</p><p>`  `const wb = XLSX.utils.book\_new();</p><p>`  `XLSX.utils.book\_append\_sheet(wb, ws, 'Palabras');</p><p>`  `XLSX.writeFile(wb, 'plantilla\_palabras.xlsx');</p><p>}</p><p></p><p>// Columnas obligatorias: word\_en, translation\_es</p><p>// Columnas opcionales:   phonetic, example\_en, example\_es, explanation</p>|
 | :- |
 
+## **4.12 Eliminar todo el banco personal**
+
+|<p>// Eliminar progreso individual (explícito antes de palabras)</p><p>DELETE FROM user\_word\_progress</p><p>WHERE user\_id = auth.uid();</p><p></p><p>// Las traducciones se eliminan por ON DELETE CASCADE de word\_translations</p><p>// Las palabras se eliminan (cascada también elimina traducciones)</p><p>DELETE FROM words WHERE owner\_id = auth.uid();</p>|
+| :- |
+
 # **5. Seeds de desarrollo**
 
 |Insertar después de crear usuarios desde Supabase Dashboard. Reemplazar los UUIDs de ejemplo con los reales del auth.users.|
@@ -303,6 +308,9 @@
 ## **6.4 Hooks — estructura estándar**
 
 |<p>// Estructura base de cualquier hook</p><p>export function useWords() {</p><p>`  `const [words, setWords] = useState([]);</p><p>`  `const [loading, setLoading] = useState(true);</p><p>`  `const [error, setError] = useState(null);</p><p></p><p>`  `async function fetchWords() {</p><p>`    `setLoading(true);</p><p>`    `const { data, error } = await supabase</p><p>      .from('words')</p><p>      .select('\*, word\_translations(\*)')</p><p>      .eq('status', 'active');</p><p>`    `if (error) { setError(error.message); }</p><p>`    `else { setWords(data); }</p><p>`    `setLoading(false);</p><p>`  `}</p><p></p><p>`  `useEffect(() => { fetchWords(); }, []);</p><p>`  `return { words, loading, error, refetch: fetchWords };</p><p>}</p>|
+| :- |
+
+|<p>// deleteAllUserWords() → elimina todas las palabras del usuario actual</p><p>//   1. Elimina user_word_progress del usuario</p><p>//   2. Elimina words del usuario (traducciones se eliminan por CASCADE)</p><p>//   Retorna { success } o { error }</p><p>//   No afecta grupos ni progreso grupal</p>|
 | :- |
 
 ## **6.5 Lógica de spaced repetition — lib/spacedRepetition.js**

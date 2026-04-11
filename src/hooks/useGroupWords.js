@@ -74,8 +74,8 @@ export function useGroupWords(groupId) {
       const translations = wordData.word_translations.map(t => ({
         group_word_id: newGroupWord.id,
         translation_es: t.translation_es,
-        example_en: t.example_en,
-        example_es: t.example_es,
+        examples_en: Array.isArray(t.examples_en) ? t.examples_en : [],
+        examples_es: Array.isArray(t.examples_es) ? t.examples_es : [],
         explanation: t.explanation,
       }));
 

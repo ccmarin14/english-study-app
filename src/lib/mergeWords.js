@@ -22,7 +22,18 @@ export async function mergeWords(personalWords, groupWords, userId) {
         );
 
         if (existingTranslation) {
-          if (existingTranslation.example_en !== gwt.example_en) {
+          const existingExamples = Array.isArray(existingTranslation.examples_en) 
+            ? existingTranslation.examples_en 
+            : existingTranslation.example_en ? [existingTranslation.example_en] : [];
+          const newExamples = Array.isArray(gwt.examples_en) 
+            ? gwt.examples_en 
+            : gwt.example_en ? [gwt.example_en] : [];
+
+          const hasOverlap = existingExamples.some(e => 
+            newExamples.some(ne => e.toLowerCase() === ne?.toLowerCase())
+          );
+
+          if (!hasOverlap && newExamples.length > 0) {
             results.translationsAdded++;
           } else {
             results.duplicatesSkipped++;
@@ -55,9 +66,18 @@ export function shouldAddTranslation(existing, newTranslation) {
     return { action: 'add', reason: 'new_translation' };
   }
 
-  const hasIdentical = existingForTranslation.some(
-    t => t.example_en?.toLowerCase() === newTranslation.example_en?.toLowerCase()
-  );
+  const newExamples = Array.isArray(newTranslation.examples_en) 
+    ? newTranslation.examples_en 
+    : newTranslation.example_en ? [newTranslation.example_en] : [];
+
+  const hasIdentical = existingForTranslation.some(t => {
+    const existingExamples = Array.isArray(t.examples_en) 
+      ? t.examples_en 
+      : t.example_en ? [t.example_en] : [];
+    return existingExamples.some(e => 
+      newExamples.some(ne => e?.toLowerCase() === ne?.toLowerCase())
+    );
+  });
 
   if (hasIdentical) {
     return { action: 'skip', reason: 'identical' };
