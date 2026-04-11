@@ -51,8 +51,8 @@ export function useWords() {
       const translations = wordData.translations.map(t => ({
         word_id: data.id,
         translation_es: t.translation_es,
-        examples_en: t.examples_en ? t.examples_en.filter(e => e.trim()) : [],
-        examples_es: t.examples_es ? t.examples_es.filter(e => e.trim()) : [],
+        example_en: Array.isArray(t.examples_en) ? t.examples_en : (t.examples_en ? [t.examples_en] : []),
+        example_es: Array.isArray(t.examples_es) ? t.examples_es : (t.examples_es ? [t.examples_es] : []),
         explanation: t.explanation || null,
       }));
 
@@ -87,8 +87,8 @@ export function useWords() {
             .from('word_translations')
             .update({
               translation_es: trans.translation_es,
-              examples_en: trans.examples_en ? trans.examples_en.filter(e => e.trim()) : [],
-              examples_es: trans.examples_es ? trans.examples_es.filter(e => e.trim()) : [],
+              example_en: Array.isArray(trans.example_en) ? trans.example_en : (trans.example_en ? [trans.example_en] : []),
+              example_es: Array.isArray(trans.example_es) ? trans.example_es : (trans.example_es ? [trans.example_es] : []),
               explanation: trans.explanation || null,
             })
             .eq('id', trans.id);
@@ -100,8 +100,8 @@ export function useWords() {
             .insert({
               word_id: wordId,
               translation_es: trans.translation_es,
-              examples_en: trans.examples_en ? trans.examples_en.filter(e => e.trim()) : [],
-              examples_es: trans.examples_es ? trans.examples_es.filter(e => e.trim()) : [],
+              example_en: Array.isArray(trans.example_en) ? trans.example_en : (trans.example_en ? [trans.example_en] : []),
+              example_es: Array.isArray(trans.example_es) ? trans.example_es : (trans.example_es ? [trans.example_es] : []),
               explanation: trans.explanation || null,
             });
 
@@ -178,8 +178,8 @@ export function useWords() {
       .insert({
         word_id: wordId,
         translation_es: translation.translation_es,
-        examples_en: translation.examples_en ? translation.examples_en.filter(e => e.trim()) : [],
-        examples_es: translation.examples_es ? translation.examples_es.filter(e => e.trim()) : [],
+        example_en: Array.isArray(translation.example_en) ? translation.example_en : (translation.example_en ? [translation.example_en] : []),
+        example_es: Array.isArray(translation.example_es) ? translation.example_es : (translation.example_es ? [translation.example_es] : []),
         explanation: translation.explanation || null,
       });
 

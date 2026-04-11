@@ -57,8 +57,8 @@ export function groupByWord(rows) {
 
     map[key].translations.push({
       translation_es: row.translation_es.trim(),
-      examples_en: parseExamples(row.examples_en),
-      examples_es: parseExamples(row.examples_es),
+      examples_en: parseExamples(row.example_en || row.examples_en),
+      examples_es: parseExamples(row.example_es || row.examples_es),
       explanation: row.explanation?.trim() || null,
     });
   }
@@ -135,22 +135,11 @@ export async function importWords(userId, groupedWords, supabaseClient = supabas
         .eq('word_id', wordId)
         .ilike('translation_es', translation.translation_es);
 
-      console.log('Palabra:', word.word_en, '| Traducción:', translation.translation_es);
-      console.log('  existingTranslations:', existingTranslations?.length || 0);
-      console.log('  translation.examples_en:', translation.examples_en);
-
+      const newExampleEn = translation.examples_en?.[0]?.toLowerCase() || '';
       const hasIdentical = existingTranslations?.some(t => {
-        const existingExamples = Array.isArray(t.examples_en) ? t.examples_en : [];
-        const newExamples = Array.isArray(translation.examples_en) ? translation.examples_en : [];
-        
-        if (existingExamples.length !== newExamples.length) return false;
-        
-        return existingExamples.every((e, i) => 
-          e.toLowerCase() === (newExamples[i] || '').toLowerCase()
-        );
+        const existingExampleEn = Array.isArray(t.example_en) ? t.example_en[0]?.toLowerCase() || '' : '';
+        return existingExampleEn === newExampleEn;
       });
-
-      console.log('  hasIdentical:', hasIdentical);
 
       if (hasIdentical) {
         results.rowsSkipped++;
@@ -162,13 +151,11 @@ export async function importWords(userId, groupedWords, supabaseClient = supabas
         .insert({
           word_id: wordId,
           translation_es: translation.translation_es,
-          examples_en: translation.examples_en || [],
-          examples_es: translation.examples_es || [],
-          explanation: translation.explanation,
+          example_en: translation.examples_en || [],
+          example_es: translation.examples_es || [],
+          explanation: translation.explanation || null,
         });
 
-      console.log('  insert error:', error?.message || error);
-      
       if (!error) {
         results.translationsAdded++;
       }

@@ -11,9 +11,21 @@ function getInitialWordState(wordData) {
     };
   }
   
-  const mapExamples = (arr) => {
-    if (!Array.isArray(arr) || arr.length === 0) return [{ en: '', es: '' }];
-    return arr.map(e => ({ en: e || '', es: '' }));
+  const mapExamples = (exampleEnArr, exampleEsArr) => {
+    const enArr = Array.isArray(exampleEnArr) ? exampleEnArr : [];
+    const esArr = Array.isArray(exampleEsArr) ? exampleEsArr : [];
+    
+    const result = [];
+    const maxLen = Math.max(enArr.length, esArr.length, 1);
+    
+    for (let i = 0; i < maxLen; i++) {
+      result.push({
+        en: enArr[i] || '',
+        es: esArr[i] || '',
+      });
+    }
+    
+    return result;
   };
   
   return {
@@ -23,7 +35,7 @@ function getInitialWordState(wordData) {
       ? wordData.word_translations.map(t => ({
           id: t.id,
           translation_es: t.translation_es || '',
-          examples: mapExamples(t.examples_en),
+          examples: mapExamples(t.example_en, t.example_es),
           explanation: t.explanation || '',
         }))
       : [{ translation_es: '', examples: [{ en: '', es: '' }], explanation: '' }],
