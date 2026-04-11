@@ -135,9 +135,22 @@ export async function importWords(userId, groupedWords, supabaseClient = supabas
         .eq('word_id', wordId)
         .ilike('translation_es', translation.translation_es);
 
-      const hasIdentical = existingTranslations?.some(
-        t => Array.isArray(t.examples_en) && t.examples_en.some(e => e.toLowerCase() === translation.examples_en?.[0]?.toLowerCase())
-      );
+      console.log('Palabra:', word.word_en, '| Traducción:', translation.translation_es);
+      console.log('  existingTranslations:', existingTranslations?.length || 0);
+      console.log('  translation.examples_en:', translation.examples_en);
+
+      const hasIdentical = existingTranslations?.some(t => {
+        const existingExamples = Array.isArray(t.examples_en) ? t.examples_en : [];
+        const newExamples = Array.isArray(translation.examples_en) ? translation.examples_en : [];
+        
+        if (existingExamples.length !== newExamples.length) return false;
+        
+        return existingExamples.every((e, i) => 
+          e.toLowerCase() === (newExamples[i] || '').toLowerCase()
+        );
+      });
+
+      console.log('  hasIdentical:', hasIdentical);
 
       if (hasIdentical) {
         results.rowsSkipped++;
@@ -149,11 +162,13 @@ export async function importWords(userId, groupedWords, supabaseClient = supabas
         .insert({
           word_id: wordId,
           translation_es: translation.translation_es,
-          examples_en: translation.examples_en,
-          examples_es: translation.examples_es,
+          examples_en: translation.examples_en || [],
+          examples_es: translation.examples_es || [],
           explanation: translation.explanation,
         });
 
+      console.log('  insert error:', error?.message || error);
+      
       if (!error) {
         results.translationsAdded++;
       }

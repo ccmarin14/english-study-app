@@ -136,6 +136,7 @@
 |**Filas con word_en vacío omitidas**|Las filas sin word_en se omiten y aparecen en el resumen como filas omitidas|☑ OK ✅|Test con fila sin word_en: 1 fila omitida|
 |**Filas con translation_es vacío omitidas**|Las filas sin translation_es se omiten con aviso en el resumen|⚠️ Parcial|Sistema omite filas sin campos requeridos|
 |**Campos opcionales vacíos**|Una fila sin phonetic, example_en, example_es o explanation se importa sin error|☑ OK ✅|Computer importada sin phonetic, apple sin explanation|
+|**Modal de progreso durante importación**|Se muestra modal con backdrop difuminado, barra de progreso, palabra actual y contador|☑ OK ✅|ImportProgressModal con backdrop-blur-sm|
 |**Resumen de importación**|Al finalizar se muestra: filas procesadas, palabras creadas, traducciones añadidas, filas omitidas|☑ OK ✅|Muestra los 4 contadores correctamente|
 |**Archivo con formato incorrecto**|Si el archivo no tiene las columnas esperadas, se muestra un mensaje de error claro|⚠️ Parcial|Muestra "0 palabras, 1 omitida" pero no error explícito|
 |**Progreso inicial**|Todas las palabras importadas inician con level=0 en user_word_progress|☑ OK ✅|Verificado: pencil muestra nivel 0 en práctica|

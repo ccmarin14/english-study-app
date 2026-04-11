@@ -95,6 +95,8 @@
 - El sistema provee una plantilla descargable con las columnas correctas y filas de ejemplo
 - Los campos phonetic, example\_en, example\_es y explanation son opcionales
 - Si word\_en o translation\_es están vacíos en una fila, esa fila se omite con un aviso al usuario
+- Durante la importación se muestra un modal con progreso en tiempo real (palabra actual y contador)
+- El modal bloquea la interacción con backdrop difuminado (backdrop-blur-sm)
 - Al finalizar la importación se muestra un resumen: filas procesadas, palabras creadas, traducciones añadidas, filas omitidas
 
 ## **RF-09 · Sesiones grupales**

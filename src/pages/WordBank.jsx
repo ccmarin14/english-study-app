@@ -4,6 +4,7 @@ import { useWords } from '../hooks/useWords';
 import { useGroups } from '../hooks/useGroups';
 import { useGroupWords } from '../hooks/useGroupWords';
 import WordCard from '../components/WordCard';
+import ProgressModal from '../components/ProgressModal';
 
 export default function WordBank() {
   const { words, loading, archiveWord, fetchArchivedWords, unarchiveWord, refetch, deleteAllUserWords } = useWords();
@@ -14,6 +15,7 @@ export default function WordBank() {
   const [confirmDeleteAll, setConfirmDeleteAll] = useState(null);
   const [exportSuccess, setExportSuccess] = useState(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
 
   const filteredWords = words.filter(word =>
@@ -63,7 +65,9 @@ export default function WordBank() {
   };
 
   const handleDeleteAll = async () => {
+    setDeleting(true);
     const result = await deleteAllUserWords();
+    setDeleting(false);
     if (result?.error) {
       console.error('Error al eliminar palabras:', result.error);
     } else {
@@ -83,7 +87,7 @@ export default function WordBank() {
   return (
     <div className="space-y-6">
       {confirmArchive && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
             <h3 className="text-lg font-semibold mb-4">
               {showArchived ? '¿Restaurar esta palabra?' : '¿Archivar esta palabra?'}
@@ -116,7 +120,7 @@ export default function WordBank() {
       )}
 
       {confirmDeleteAll && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
             <h3 className="text-lg font-semibold mb-4">
               ¿Eliminar todas las palabras?
@@ -222,6 +226,8 @@ export default function WordBank() {
           ))}
         </div>
       )}
+
+      {deleting && <ProgressModal message="Eliminando palabras..." />}
     </div>
   );
 }
