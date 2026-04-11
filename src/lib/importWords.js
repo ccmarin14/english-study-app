@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import * as XLSX from 'xlsx';
 
@@ -18,6 +17,22 @@ export async function parseImportFile(file) {
     reader.onerror = () => reject(new Error('Error leyendo archivo'));
     reader.readAsBinaryString(file);
   });
+}
+
+function parseExamples(value) {
+  if (!value) return [];
+  const trimmed = String(value).trim();
+  if (!trimmed) return [];
+  
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (Array.isArray(parsed)) {
+      return parsed.filter(e => typeof e === 'string' && e.trim());
+    }
+    return [trimmed];
+  } catch {
+    return [trimmed];
+  }
 }
 
 export function groupByWord(rows) {
@@ -42,8 +57,8 @@ export function groupByWord(rows) {
 
     map[key].translations.push({
       translation_es: row.translation_es.trim(),
-      example_en: row.example_en?.trim() || null,
-      example_es: row.example_es?.trim() || null,
+      examples_en: parseExamples(row.examples_en),
+      examples_es: parseExamples(row.examples_es),
       explanation: row.explanation?.trim() || null,
     });
   }
@@ -69,7 +84,7 @@ export function downloadTemplate() {
   XLSX.writeFile(wb, 'plantilla_palabras.xlsx');
 }
 
-export async function importWords(userId, groupedWords, supabaseClient = supabase) {
+export async function importWords(userId, groupedWords, supabaseClient = supabase, onProgress = null) {
   const results = {
     wordsCreated: 0,
     translationsAdded: 0,
@@ -77,7 +92,15 @@ export async function importWords(userId, groupedWords, supabaseClient = supabas
     rowsSkipped: 0,
   };
 
-  for (const word of groupedWords.words) {
+  const total = groupedWords.words.length;
+
+  for (let i = 0; i < groupedWords.words.length; i++) {
+    const word = groupedWords.words[i];
+
+    if (onProgress) {
+      onProgress({ current: i + 1, total, word: word.word_en });
+    }
+
     const { data: existingWords } = await supabaseClient
       .from('words')
       .select('*, word_translations(*)')
@@ -113,7 +136,7 @@ export async function importWords(userId, groupedWords, supabaseClient = supabas
         .ilike('translation_es', translation.translation_es);
 
       const hasIdentical = existingTranslations?.some(
-        t => t.example_en?.toLowerCase() === translation.example_en?.toLowerCase()
+        t => Array.isArray(t.examples_en) && t.examples_en.some(e => e.toLowerCase() === translation.examples_en?.[0]?.toLowerCase())
       );
 
       if (hasIdentical) {
@@ -126,8 +149,8 @@ export async function importWords(userId, groupedWords, supabaseClient = supabas
         .insert({
           word_id: wordId,
           translation_es: translation.translation_es,
-          example_en: translation.example_en,
-          example_es: translation.example_es,
+          examples_en: translation.examples_en,
+          examples_es: translation.examples_es,
           explanation: translation.explanation,
         });
 

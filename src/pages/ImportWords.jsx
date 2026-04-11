@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { parseImportFile, groupByWord, importWords, downloadTemplate } from '../lib/importWords';
+import ImportProgressModal from '../components/ImportProgressModal';
 
 export default function ImportWords() {
   const { user } = useAuth();
@@ -11,6 +12,7 @@ export default function ImportWords() {
   const [preview, setPreview] = useState(null);
   const [results, setResults] = useState(null);
   const [error, setError] = useState('');
+  const [importProgress, setImportProgress] = useState(null);
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
@@ -36,8 +38,16 @@ export default function ImportWords() {
 
     setLoading(true);
     setError('');
+    setImportProgress({ current: 0, total: preview.words.length, word: '' });
 
-    const importResults = await importWords(user.id, preview);
+    const importResults = await importWords(
+      user.id,
+      preview,
+      undefined,
+      ({ current, total, word }) => setImportProgress({ current, total, word })
+    );
+    
+    setImportProgress(null);
     setResults(importResults);
     setPreview(null);
     setLoading(false);
@@ -134,9 +144,19 @@ export default function ImportWords() {
                   {word.phonetic && (
                     <p className="text-sm text-gray-500">{word.phonetic}</p>
                   )}
-                  <p className="text-sm text-indigo-600 mt-1">
-                    {word.translations.map(t => t.translation_es).join(', ')}
-                  </p>
+                  <div className="mt-2 space-y-2">
+                    {word.translations.slice(0, 3).map((t, ti) => (
+                      <div key={ti} className="text-sm">
+                        <p className="text-indigo-600 font-medium">{t.translation_es}</p>
+                        {t.examples_en?.[0] && (
+                          <p className="text-gray-500 italic text-xs mt-0.5">{t.examples_en[0]}</p>
+                        )}
+                      </div>
+                    ))}
+                    {word.translations.length > 3 && (
+                      <p className="text-xs text-gray-400">+{word.translations.length - 3} traducciones más</p>
+                    )}
+                  </div>
                 </div>
               ))}
               {preview.words.length > 10 && (
@@ -162,6 +182,14 @@ export default function ImportWords() {
               </button>
             </div>
           </div>
+        )}
+
+        {importProgress && (
+          <ImportProgressModal
+            current={importProgress.current}
+            total={importProgress.total}
+            word={importProgress.word}
+          />
         )}
       </div>
   );
