@@ -16,7 +16,6 @@
 - Los usuarios acceden ingresando su email y contraseña mediante Supabase Auth
 - Cada usuario tiene un perfil con nombre de usuario (username) y color de avatar
 - La sesión es persistente: no requiere re-autenticación hasta cerrar sesión
-- El username en login es el email del usuario (el username visible en la UI se configura aparte)
 - El usuario puede cerrar sesión y volver a iniciar con otra cuenta
 
 ## **RF-02 · Banco de palabras personal**

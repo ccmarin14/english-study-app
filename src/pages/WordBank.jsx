@@ -6,12 +6,13 @@ import { useGroupWords } from '../hooks/useGroupWords';
 import WordCard from '../components/WordCard';
 
 export default function WordBank() {
-  const { words, loading, archiveWord } = useWords();
+  const { words, loading, archiveWord, fetchArchivedWords, unarchiveWord, refetch } = useWords();
   const { currentGroup } = useGroups();
   const { exportWord, refetch: refetchGroupWords } = useGroupWords(currentGroup?.id);
   const [search, setSearch] = useState('');
   const [confirmArchive, setConfirmArchive] = useState(null);
   const [exportSuccess, setExportSuccess] = useState(null);
+  const [showArchived, setShowArchived] = useState(false);
   const navigate = useNavigate();
 
   const filteredWords = words.filter(word =>
@@ -27,9 +28,22 @@ export default function WordBank() {
 
   const confirmArchiveWord = async () => {
     if (confirmArchive) {
-      await archiveWord(confirmArchive);
+      if (showArchived) {
+        await unarchiveWord(confirmArchive);
+      } else {
+        await archiveWord(confirmArchive);
+      }
       setConfirmArchive(null);
     }
+  };
+
+  const toggleArchived = async () => {
+    if (showArchived) {
+      await refetch();
+    } else {
+      await fetchArchivedWords();
+    }
+    setShowArchived(!showArchived);
   };
 
   const handleExport = async (wordId) => {
@@ -44,7 +58,7 @@ export default function WordBank() {
   };
 
   const handleWordClick = (word) => {
-    navigate('/word-bank', { state: { selectedWord: word } });
+    navigate('/edit-word', { state: { selectedWord: word, isFromArchive: showArchived } });
   };
 
   if (loading) {
@@ -60,8 +74,14 @@ export default function WordBank() {
       {confirmArchive && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-            <h3 className="text-lg font-semibold mb-4">¿Archivar esta palabra?</h3>
-            <p className="text-gray-600 mb-4">La palabra se moverá al archivo y no aparecerá en la práctica.</p>
+            <h3 className="text-lg font-semibold mb-4">
+              {showArchived ? '¿Restaurar esta palabra?' : '¿Archivar esta palabra?'}
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {showArchived
+                ? 'La palabra se restaurará y aparecerá en tu banco activo.'
+                : 'La palabra se moverá al archivo y no aparecerá en la práctica.'}
+            </p>
             <div className="flex gap-4">
               <button
                 onClick={() => setConfirmArchive(null)}
@@ -71,9 +91,13 @@ export default function WordBank() {
               </button>
               <button
                 onClick={confirmArchiveWord}
-                className="flex-1 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className={`flex-1 py-2 text-white rounded-lg ${
+                  showArchived
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : 'bg-red-600 hover:bg-red-700'
+                }`}
               >
-                Archivar
+                {showArchived ? 'Restaurar' : 'Archivar'}
               </button>
             </div>
           </div>
@@ -81,20 +105,32 @@ export default function WordBank() {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Banco de Palabras</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {showArchived ? 'Palabras Archivadas' : 'Banco de Palabras'}
+        </h1>
         <div className="flex gap-4">
           <button
-            onClick={() => navigate('/import')}
-            className="px-4 py-2 text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+            onClick={toggleArchived}
+            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            📥 Importar Excel
+            {showArchived ? '← Ver activas' : '📁 Ver archivadas'}
           </button>
-          <button
-            onClick={() => navigate('/add-word')}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            ➕ Añadir palabra
-          </button>
+          {!showArchived && (
+            <>
+              <button
+                onClick={() => navigate('/import')}
+                className="px-4 py-2 text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+              >
+                📥 Importar Excel
+              </button>
+              <button
+                onClick={() => navigate('/add-word')}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              >
+                ➕ Añadir palabra
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -132,8 +168,10 @@ export default function WordBank() {
               word={word}
               onClick={() => handleWordClick(word)}
               onArchive={() => handleArchive(word.id)}
-              onExport={currentGroup ? () => handleExport(word.id) : null}
+              onExport={!showArchived && currentGroup ? () => handleExport(word.id) : null}
+              onEdit={!showArchived ? () => handleWordClick(word) : null}
               showProgress
+              isArchived={showArchived}
             />
           ))}
         </div>

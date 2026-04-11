@@ -1,6 +1,6 @@
 import ProgressBar from './ProgressBar';
 
-export default function WordCard({ word, onClick, onArchive, onExport, showProgress = false }) {
+export default function WordCard({ word, onClick, onArchive, onExport, onEdit, showProgress = false, isArchived = false }) {
   const translations = word.word_translations || [];
 
   return (
@@ -44,6 +44,17 @@ export default function WordCard({ word, onClick, onArchive, onExport, showProgr
       </div>
 
       <div className="mt-3 flex gap-2">
+        {onEdit && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(word);
+            }}
+            className="text-xs text-indigo-600 hover:text-indigo-700"
+          >
+            ✏️ Editar
+          </button>
+        )}
         {onExport && word.status === 'active' && (
           <button
             onClick={(e) => {
@@ -55,7 +66,7 @@ export default function WordCard({ word, onClick, onArchive, onExport, showProgr
             📤 Exportar al grupo
           </button>
         )}
-        {onArchive && word.status === 'active' && (
+        {onArchive && !isArchived && word.status === 'active' && (
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -64,6 +75,17 @@ export default function WordCard({ word, onClick, onArchive, onExport, showProgr
             className="text-xs text-red-600 hover:text-red-700"
           >
             Archivar
+          </button>
+        )}
+        {onArchive && isArchived && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onArchive(word.id);
+            }}
+            className="text-xs text-green-600 hover:text-green-700"
+          >
+            Restaurar
           </button>
         )}
       </div>

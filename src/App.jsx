@@ -5,6 +5,7 @@ import AuthCallback from './pages/AuthCallback';
 import Dashboard from './pages/Dashboard';
 import WordBank from './pages/WordBank';
 import AddWord from './pages/AddWord';
+import EditWord from './pages/EditWord';
 import Practice from './pages/Practice';
 import Groups from './pages/Groups';
 import GroupSession from './pages/GroupSession';
@@ -81,6 +82,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <AddWord />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/edit-word"
+        element={
+          <ProtectedRoute>
+            <EditWord />
           </ProtectedRoute>
         }
       />

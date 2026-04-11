@@ -68,12 +68,90 @@ export function useWords() {
   }
 
   async function updateWord(wordId, updates) {
+    if (updates.word_en !== undefined || updates.phonetic !== undefined) {
+      const { error } = await supabase
+        .from('words')
+        .update({
+          word_en: updates.word_en,
+          phonetic: updates.phonetic || null,
+        })
+        .eq('id', wordId);
+
+      if (error) return { error };
+    }
+
+    if (updates.translations && updates.translations.length > 0) {
+      for (const trans of updates.translations) {
+        if (trans.id) {
+          const { error } = await supabase
+            .from('word_translations')
+            .update({
+              translation_es: trans.translation_es,
+              example_en: trans.example_en || null,
+              example_es: trans.example_es || null,
+              explanation: trans.explanation || null,
+            })
+            .eq('id', trans.id);
+
+          if (error) return { error };
+        } else {
+          const { error } = await supabase
+            .from('word_translations')
+            .insert({
+              word_id: wordId,
+              translation_es: trans.translation_es,
+              example_en: trans.example_en || null,
+              example_es: trans.example_es || null,
+              explanation: trans.explanation || null,
+            });
+
+          if (error) return { error };
+        }
+      }
+    }
+
+    await fetchWords();
+    return { success: true };
+  }
+
+  async function deleteTranslation(translationId) {
+    const { error } = await supabase
+      .from('word_translations')
+      .delete()
+      .eq('id', translationId);
+
+    if (error) return { error };
+
+    await fetchWords();
+    return { success: true };
+  }
+
+  async function fetchArchivedWords() {
+    if (!user) return;
+
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('words')
+      .select(`
+        *,
+        word_translations(*)
+      `)
+      .eq('owner_id', user.id)
+      .eq('status', 'archived')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      setWords(data || []);
+    }
+    setLoading(false);
+  }
+
+  async function unarchiveWord(wordId) {
     const { error } = await supabase
       .from('words')
-      .update({
-        word_en: updates.word_en,
-        phonetic: updates.phonetic || null,
-      })
+      .update({ status: 'active' })
       .eq('id', wordId);
 
     if (error) return { error };
@@ -116,9 +194,12 @@ export function useWords() {
     loading,
     error,
     refetch: fetchWords,
+    fetchArchivedWords,
     addWord,
     updateWord,
     archiveWord,
+    unarchiveWord,
+    deleteTranslation,
     addTranslation,
   };
 }
