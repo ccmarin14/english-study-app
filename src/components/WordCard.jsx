@@ -74,7 +74,7 @@ export default function WordCard({ word, onClick, onArchive, onExport, onEdit, s
             }}
             className="text-xs text-red-600 hover:text-red-700"
           >
-            Archivar
+            📁 Archivar
           </button>
         )}
         {onArchive && isArchived && (
@@ -85,7 +85,7 @@ export default function WordCard({ word, onClick, onArchive, onExport, onEdit, s
             }}
             className="text-xs text-green-600 hover:text-green-700"
           >
-            Restaurar
+            ♻️ Restaurar
           </button>
         )}
       </div>

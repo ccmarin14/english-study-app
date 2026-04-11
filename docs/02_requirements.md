@@ -19,12 +19,17 @@
 - El usuario puede cerrar sesión y volver a iniciar con otra cuenta
 
 ## **RF-02 · Banco de palabras personal**
-- Cada usuario tiene su propio banco de palabras
-- Una palabra tiene: término en inglés y fonética opcional
-- Una palabra tiene una o varias traducciones al español
-- Cada traducción tiene: texto en español, frase de ejemplo en inglés, frase de ejemplo en español, y explicación de contexto de uso
-- El usuario puede crear, editar y archivar palabras de su banco
-- Al crear una palabra, el usuario puede elegir exportarla a su grupo (si pertenece a uno)
+- Cada usuario tiene su propio banco de palabras ✅
+- Una palabra tiene: término en inglés y fonética opcional ✅
+- Una palabra tiene una o varias traducciones al español ✅
+- Cada traducción tiene: texto en español, frase de ejemplo en inglés, frase de ejemplo en español, y explicación de contexto de uso ✅
+- El usuario puede crear, editar y archivar palabras de su banco ✅
+  - Crear: ✅
+  - Editar palabra y traducciones: ✅ (página /edit-word)
+  - Archivar: ✅
+  - Ver archivadas: ✅ (toggle en banco)
+  - Restaurar: ✅
+- Al crear una palabra, el usuario puede elegir exportarla a su grupo (si pertenece a uno) ✅
 
 ## **RF-03 · Banco de frases personal**
 - Cada usuario tiene su propio banco de frases
