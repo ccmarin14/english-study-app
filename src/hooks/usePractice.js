@@ -12,6 +12,8 @@ export function usePractice() {
   const [error, setError] = useState(null);
   const [practiceStats, setPracticeStats] = useState({ correct: 0, total: 0 });
 
+  const canStartPractice = words.length >= 5;
+
   useEffect(() => {
     fetchWordsForPractice();
   }, [user]);
@@ -86,40 +88,47 @@ export function usePractice() {
       isCorrect
     );
 
-    const { data: existingProgress } = await supabase
+    // Update local state immediately so UI shows result without refresh
+    const updatedWords = words.map(w =>
+      w.id === currentWord.id
+        ? { ...w, level, correct_streak, weight: calcWeight(level) }
+        : w
+    );
+    setWords(updatedWords);
+
+    // Update current word local state
+    setCurrentWord(prev => prev ? { ...prev, level, correct_streak } : null);
+
+    // Persist to Supabase (fire and forget - don't block UI)
+    supabase
       .from('user_word_progress')
       .select('*')
       .eq('user_id', user.id)
       .eq('word_id', currentWord.id)
-      .single();
-
-    if (existingProgress) {
-      await supabase
-        .from('user_word_progress')
-        .update({
-          level,
-          correct_streak,
-          last_practiced_at: new Date().toISOString(),
-        })
-        .eq('id', existingProgress.id);
-    } else {
-      await supabase
-        .from('user_word_progress')
-        .insert({
-          user_id: user.id,
-          word_id: currentWord.id,
-          level,
-          correct_streak,
-          last_practiced_at: new Date().toISOString(),
-        });
-    }
-
-    await fetchWordsForPractice();
-    
-    const updatedWord = words.find(w => w.id === currentWord.id);
-    if (updatedWord) {
-      setCurrentWord(updatedWord);
-    }
+      .single()
+      .then(({ data: existingProgress }) => {
+        if (existingProgress) {
+          return supabase
+            .from('user_word_progress')
+            .update({
+              level,
+              correct_streak,
+              last_practiced_at: new Date().toISOString(),
+            })
+            .eq('id', existingProgress.id);
+        } else {
+          return supabase
+            .from('user_word_progress')
+            .insert({
+              user_id: user.id,
+              word_id: currentWord.id,
+              level,
+              correct_streak,
+              last_practiced_at: new Date().toISOString(),
+            });
+        }
+      });
+    // NO longer calling fetchWordsForPractice() here to avoid refresh
   }
 
   function calcNewProgress(current, isCorrect) {
@@ -143,6 +152,7 @@ export function usePractice() {
     loading,
     error,
     practiceStats,
+    canStartPractice,
     selectNextWord,
     recordAnswer,
     refetch: fetchWordsForPractice,

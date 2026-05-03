@@ -35,13 +35,15 @@
 - Cada usuario tiene su propio banco de frases ✅
 - Una frase tiene: texto en inglés y texto en español ✅
 - Una frase pertenece a exactamente una traducción específica de una palabra del banco ✅
-- El usuario puede crear, editar y eliminar frases
+- El usuario puede crear, editar y eliminar frases ✅
 
 ## **RF-04 · Sistema de práctica individual**
 - El usuario puede iniciar una sesión de práctica desde su banco personal
-- Modos disponibles: Flashcard, Selección múltiple (quiz), Writing (escribir la traducción)
-- Las frases asociadas a una palabra aparecen como ayuda contextual durante la práctica
-- Al revelar la respuesta, se muestra la explicación de contexto de la traducción correspondiente
+- Se requieren al menos 5 palabras en el banco para iniciar una práctica
+- La práctica inicia siempre en modo writing (escribir la traducción en español)
+- El usuario puede solicitar cambio a quiz (selección múltiple) si no sabe la respuesta (solo si hay ≥5 palabras en el banco)
+- El sistema valida automáticamente la respuesta y determina si es correcta o incorrecta
+- Tras responder se muestra: pronunciación (phonetic), frase de uso (example_en/example_es) y explicación de contexto
 - La selección de palabras usa probabilidad ponderada: menor nivel = mayor probabilidad
 
 |<p>**Tabla de pesos por nivel**</p><p>Nivel 0 → peso 32     Nivel 1 → peso 16     Nivel 2 → peso 8</p><p>Nivel 3 → peso 4      Nivel 4 → peso 2      Nivel 5 → peso 1</p>|

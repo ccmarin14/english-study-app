@@ -3,6 +3,40 @@ import { usePractice } from '../hooks/usePractice';
 import ProgressBar from '../components/ProgressBar';
 import QuizOption from '../components/QuizOption';
 
+function normalizeText(text) {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function isFuzzyMatch(answer, correct, maxDistance = 2) {
+  const a = normalizeText(answer);
+  const b = normalizeText(correct);
+  
+  if (a === b) return true;
+  
+  const matrix = [];
+  for (let i = 0; i <= a.length; i++) {
+    matrix[i] = [i];
+  }
+  for (let j = 0; j <= b.length; j++) {
+    matrix[0][j] = j;
+  }
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return matrix[a.length][b.length] <= maxDistance;
+}
+
 export default function Practice() {
   const {
     words,
@@ -10,17 +44,23 @@ export default function Practice() {
     currentTranslation,
     loading,
     practiceStats,
+    canStartPractice,
     selectNextWord,
     recordAnswer,
     resetStats,
   } = usePractice();
 
-  const [mode, setMode] = useState('flashcard');
-  const [showAnswer, setShowAnswer] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [answered, setAnswered] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [showResult, setShowResult] = useState(false);
   const [writtenAnswer, setWrittenAnswer] = useState('');
   const [options, setOptions] = useState([]);
+  const [exampleIdx, setExampleIdx] = useState(0);
+  const [practicedCount, setPracticedCount] = useState(0);
+  const [sessionComplete, setSessionComplete] = useState(false);
+  const [showFinalize, setShowFinalize] = useState(false);
+  const TOTAL_WORDS = 5;
 
   useEffect(() => {
     if (words.length > 0 && !currentWord) {
@@ -29,10 +69,22 @@ export default function Practice() {
   }, [words, currentWord]);
 
   useEffect(() => {
-    if (currentWord && currentTranslation && mode === 'quiz') {
+    if (currentTranslation?.example_en?.length > 1) {
+      const idx = Math.floor(Math.random() * currentTranslation.example_en.length);
+      setExampleIdx(idx);
+    } else {
+      setExampleIdx(0);
+    }
+  }, [currentTranslation]);
+
+  useEffect(() => {
+    if (currentWord && currentTranslation && showQuiz) {
       generateOptions();
     }
-  }, [currentWord, currentTranslation, mode]);
+  }, [currentWord, currentTranslation, showQuiz]);
+
+  // Removed: useEffect that reset states on currentWord change
+  // Now states only reset when clicking "Siguiente"
 
   function generateOptions() {
     if (!currentWord || !currentTranslation) return;
@@ -51,28 +103,57 @@ export default function Practice() {
   }
 
   function handleNext() {
-    setShowAnswer(false);
+    // Reset all states for next word
+    setShowQuiz(false);
+    setAnswered(false);
+    setIsCorrect(false);
     setSelectedOption(null);
-    setShowResult(false);
     setWrittenAnswer('');
+    setOptions([]);
     selectNextWord();
   }
 
-  function handleAnswer(isCorrect) {
-    setShowResult(true);
-    recordAnswer(isCorrect);
+  function handleWrittenSubmit() {
+    const userAnswer = writtenAnswer.trim();
+    const correctAnswer = currentTranslation?.translation_es || '';
+    const correct = isFuzzyMatch(userAnswer, correctAnswer);
+    setAnswered(true);
+    setIsCorrect(correct);
+    recordAnswer(correct);
+  
+    // Detect if it's the last word (practicedCount is 0-4, last is 4)
+    const willBeLast = practicedCount === TOTAL_WORDS - 1;
+  
+    if (!willBeLast) {
+      setPracticedCount(prev => prev + 1);
+    } else {
+      setShowFinalize(true);
+    }
   }
 
   function handleQuizAnswer(option) {
     setSelectedOption(option);
-    const isCorrect = option === currentTranslation?.translation_es;
-    handleAnswer(isCorrect);
+    const correct = option === currentTranslation?.translation_es;
+    setAnswered(true);
+    setIsCorrect(correct);
+    recordAnswer(correct);
+  
+    // Detect if it's the last word
+    const willBeLast = practicedCount === TOTAL_WORDS - 1;
+  
+    if (!willBeLast) {
+      setPracticedCount(prev => prev + 1);
+    } else {
+      setShowFinalize(true);
+    }
   }
 
-  function handleWrittenSubmit() {
-    const isCorrect = writtenAnswer.trim().toLowerCase() ===
-      currentTranslation?.translation_es.toLowerCase();
-    handleAnswer(isCorrect);
+  function handleShowQuiz() {
+    setShowQuiz(true);
+  }
+
+  function handleFinalize() {
+    setSessionComplete(true);
   }
 
   if (loading) {
@@ -86,7 +167,7 @@ export default function Practice() {
   if (words.length === 0) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-xl font-semibold text-gray-900">No hay palabras para practicar</h2>
+        <h2 className="text-xl font-bold text-gray-900">No hay palabras para practicar</h2>
         <p className="text-gray-600 mt-2">
           Añade palabras a tu banco para comenzar a practicar
         </p>
@@ -94,210 +175,186 @@ export default function Practice() {
     );
   }
 
-  return (
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Práctica</h1>
-          <div className="text-sm text-gray-600">
+  if (!canStartPractice) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <div className="text-6xl mb-4">📚</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Necesitas más palabras</h2>
+          <p className="text-gray-600">
+            Necesitas al menos <strong>5 palabras</strong> en tu banco para iniciar una práctica.
+          </p>
+          <p className="text-gray-500 mt-2">
+            Actualmente tienes <strong>{words.length}</strong> {words.length === 1 ? 'palabra' : 'palabras'}.
+          </p>
+          <a
+            href="/word-bank"
+            className="mt-6 inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            Ir al banco de palabras
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Session complete
+  if (sessionComplete) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center space-y-6">
+          <div className="text-6xl">🎉</div>
+          <h2 className="text-2xl font-bold text-gray-900">¡Sesión completada!</h2>
+          <p className="text-lg text-gray-600">
+            Respondiste {practiceStats.total} palabras
+          </p>
+          <p className="text-2xl font-bold text-indigo-600">
             {practiceStats.correct}/{practiceStats.total} correctas
-          </div>
+          </p>
+          <button
+            onClick={() => {
+              resetStats();
+              setPracticedCount(0);
+              setSessionComplete(false);
+              setShowFinalize(false);
+              selectNextWord();
+            }}
+            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            Practicar de nuevo
+          </button>
         </div>
+      </div>
+    );
+  }
 
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="flex gap-2">
-            {['flashcard', 'quiz', 'writing'].map((m) => (
-              <button
-                key={m}
-                onClick={() => {
-                  setMode(m);
-                  setShowAnswer(false);
-                  setSelectedOption(null);
-                  setShowResult(false);
-                  setWrittenAnswer('');
-                }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  mode === m
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {m === 'flashcard' && '📇 '}
-                {m === 'quiz' && '❓ '}
-                {m === 'writing' && '✍️ '}
-                {m.charAt(0).toUpperCase() + m.slice(1)}
-              </button>
-            ))}
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Práctica</h1>
+      </div>
+
+      {currentWord && currentTranslation && (
+        <div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
+          <div className="text-center">
+            <h2 className="text-4xl font-bold text-gray-900">{currentWord.word_en}</h2>
           </div>
-        </div>
 
-        {currentWord && currentTranslation && (
-          <div className="bg-white rounded-lg shadow-lg p-8">
-            {mode === 'flashcard' && (
-              <>
+          {!answered ? (
+            <>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-gray-700 font-medium mb-3">✍️ Escribe la traducción en español:</p>
+                <input
+                  type="text"
+                  value={writtenAnswer}
+                  onChange={(e) => setWrittenAnswer(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && writtenAnswer.trim() && handleWrittenSubmit()}
+                  placeholder="Escribe aquí..."
+                  className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                />
+                <button
+                  onClick={handleWrittenSubmit}
+                  disabled={!writtenAnswer.trim()}
+                  className="mt-3 w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  Verificar
+                </button>
+              </div>
+
+              {!showQuiz && words.length >= 5 && (
                 <div className="text-center">
-                  <h2 className="text-4xl font-bold text-gray-900">{currentWord.word_en}</h2>
-                  {currentWord.phonetic && (
-                    <p className="text-lg text-gray-500 mt-2">{currentWord.phonetic}</p>
-                  )}
-                </div>
-
-                {currentWord.word_translations?.[0]?.examples_en?.[0] && (
-                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                    <p className="text-gray-600 italic">
-                      "{currentWord.word_translations[0].examples_en[0].replace(
-                        new RegExp(currentWord.word_en, 'gi'),
-                        '_____'
-                      )}"
-                    </p>
-                  </div>
-                )}
-
-                {showAnswer ? (
-                  <div className="mt-8 text-center">
-                    <p className="text-3xl font-semibold text-indigo-600">
-                      {currentTranslation.translation_es}
-                    </p>
-                    {currentTranslation.explanation && (
-                      <p className="text-gray-600 mt-4 bg-yellow-50 p-3 rounded-lg">
-                        💡 {currentTranslation.explanation}
-                      </p>
-                    )}
-                  </div>
-                ) : (
                   <button
-                    onClick={() => setShowAnswer(true)}
-                    className="mt-8 w-full py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                    onClick={handleShowQuiz}
+                    className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                   >
-                    Revelar respuesta
+                    ¿No sabes? Ver opciones
                   </button>
-                )}
-
-                {showAnswer && (
-                  <div className="mt-6 flex gap-4">
-                    <button
-                      onClick={() => handleAnswer(false)}
-                      className="flex-1 py-3 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-                    >
-                      ✗ Incorrecto
-                    </button>
-                    <button
-                      onClick={() => handleAnswer(true)}
-                      className="flex-1 py-3 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                    >
-                      ✓ Correcto
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-
-            {mode === 'quiz' && (
-              <>
-                <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold text-gray-900">{currentWord.word_en}</h2>
                 </div>
+              )}
 
-                {currentWord.word_translations?.[0]?.examples_en?.[0] && (
-                  <div className="p-4 bg-gray-50 rounded-lg mb-6">
-                    <p className="text-gray-600 italic">
-                      "{currentWord.word_translations[0].examples_en[0].replace(
-                        new RegExp(currentWord.word_en, 'gi'),
-                        '_____'
-                      )}"
-                    </p>
-                  </div>
-                )}
-
+              {showQuiz && (
                 <div className="space-y-3">
+                  <p className="text-center text-gray-600 text-sm font-medium">Selecciona la traducción correcta:</p>
                   {options.map((option) => (
                     <QuizOption
                       key={option}
                       option={option}
                       onClick={handleQuizAnswer}
-                      disabled={showResult}
+                      disabled={false}
                       isCorrect={option === currentTranslation?.translation_es}
-                      showResult={showResult}
+                      showResult={false}
                     />
                   ))}
                 </div>
-
-                {showResult && (
-                  <div className="mt-6">
-                    {selectedOption === currentTranslation?.translation_es ? (
-                      <p className="text-center text-green-600 font-medium">✓ ¡Correcto!</p>
-                    ) : (
-                      <p className="text-center text-red-600 font-medium">
-                        ✗ La respuesta correcta era: {currentTranslation?.translation_es}
-                      </p>
-                    )}
-                    <button
-                      onClick={handleNext}
-                      className="mt-4 w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                    >
-                      Siguiente →
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-
-            {mode === 'writing' && (
-              <>
-                <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold text-gray-900">{currentWord.word_en}</h2>
-                </div>
-
-                <div className="p-4 bg-gray-50 rounded-lg mb-6">
-                  <p className="text-gray-600 italic">
-                    Escribe la traducción en español
-                  </p>
-                </div>
-
-                <input
-                  type="text"
-                  value={writtenAnswer}
-                  onChange={(e) => setWrittenAnswer(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !showResult && handleWrittenSubmit()}
-                  disabled={showResult}
-                  placeholder="Escribe aquí..."
-                  className="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                />
-
-                {showResult ? (
-                  <div className="mt-4">
-                    {writtenAnswer.trim().toLowerCase() === currentTranslation?.translation_es.toLowerCase() ? (
-                      <p className="text-center text-green-600 font-medium">✓ ¡Correcto!</p>
-                    ) : (
-                      <p className="text-center text-red-600 font-medium">
-                        ✗ La respuesta correcta era: {currentTranslation?.translation_es}
-                      </p>
-                    )}
-                    <button
-                      onClick={handleNext}
-                      className="mt-4 w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                    >
-                      Siguiente →
-                    </button>
-                  </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className={`p-4 rounded-lg text-center ${isCorrect ? 'bg-green-50' : 'bg-red-50'}`}>
+                {isCorrect ? (
+                  <p className="text-green-700 font-semibold text-lg">✅ ¡Correcto!</p>
                 ) : (
-                  <button
-                    onClick={handleWrittenSubmit}
-                    disabled={!writtenAnswer.trim()}
-                    className="mt-4 w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-                  >
-                    Verificar
-                  </button>
+                  <p className="text-red-700 font-semibold text-lg">
+                    ❌ Era: <span className="underline">{currentTranslation.translation_es}</span>
+                  </p>
                 )}
-              </>
-            )}
-          </div>
-        )}
+              </div>
 
-        {currentWord && (
-          <div className="bg-white rounded-lg shadow-sm p-4">
-            <ProgressBar level={currentWord.level} />
-          </div>
-        )}
-      </div>
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                {currentWord.phonetic && (
+                  <p className="text-gray-700">
+                    <span className="font-medium">🔊 Pronunciación:</span> {currentWord.phonetic}
+                  </p>
+                )}
+
+                {currentTranslation.example_en && (
+                  <p className="text-gray-700">
+                    <span className="font-medium">📝 Frase de uso:</span>{' '}
+                    {Array.isArray(currentTranslation.example_en)
+                      ? currentTranslation.example_en[exampleIdx]
+                      : currentTranslation.example_en}
+                    {currentTranslation.example_es && (
+                      <span className="text-gray-500"> →{' '}
+                        {Array.isArray(currentTranslation.example_es)
+                          ? currentTranslation.example_es[exampleIdx]
+                          : currentTranslation.example_es}
+                      </span>
+                    )}
+                  </p>
+                )}
+
+                {currentTranslation.explanation && (
+                  <p className="text-gray-700">
+                    <span className="font-medium">💡 Contexto:</span> {currentTranslation.explanation}
+                  </p>
+                )}
+              </div>
+
+              {showFinalize ? (
+                <button
+                  onClick={handleFinalize}
+                  className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium"
+                >
+                  Finalizar
+                </button>
+              ) : (
+                <button
+                  onClick={handleNext}
+                  className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium"
+                >
+                  Siguiente →
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      {currentWord && (
+        <div className="bg-white rounded-lg shadow-sm p-4">
+          <ProgressBar current={practicedCount} total={TOTAL_WORDS} />
+        </div>
+      )}
+    </div>
   );
 }
