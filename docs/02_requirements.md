@@ -32,9 +32,9 @@
 - Al crear una palabra, el usuario puede elegir exportarla a su grupo (si pertenece a uno) ✅
 
 ## **RF-03 · Banco de frases personal**
-- Cada usuario tiene su propio banco de frases
-- Una frase tiene: texto en inglés y texto en español
-- Una frase pertenece a exactamente una traducción específica de una palabra del banco
+- Cada usuario tiene su propio banco de frases ✅
+- Una frase tiene: texto en inglés y texto en español ✅
+- Una frase pertenece a exactamente una traducción específica de una palabra del banco ✅
 - El usuario puede crear, editar y eliminar frases
 
 ## **RF-04 · Sistema de práctica individual**

@@ -87,8 +87,8 @@ export function useWords() {
             .from('word_translations')
             .update({
               translation_es: trans.translation_es,
-              example_en: Array.isArray(trans.example_en) ? trans.example_en : (trans.example_en ? [trans.example_en] : []),
-              example_es: Array.isArray(trans.example_es) ? trans.example_es : (trans.example_es ? [trans.example_es] : []),
+              example_en: Array.isArray(trans.examples_en) ? trans.examples_en : (trans.examples_en ? [trans.examples_en] : []),
+              example_es: Array.isArray(trans.examples_es) ? trans.examples_es : (trans.examples_es ? [trans.examples_es] : []),
               explanation: trans.explanation || null,
             })
             .eq('id', trans.id);
@@ -100,8 +100,8 @@ export function useWords() {
             .insert({
               word_id: wordId,
               translation_es: trans.translation_es,
-              example_en: Array.isArray(trans.example_en) ? trans.example_en : (trans.example_en ? [trans.example_en] : []),
-              example_es: Array.isArray(trans.example_es) ? trans.example_es : (trans.example_es ? [trans.example_es] : []),
+              example_en: Array.isArray(trans.examples_en) ? trans.examples_en : (trans.examples_en ? [trans.examples_en] : []),
+              example_es: Array.isArray(trans.examples_es) ? trans.examples_es : (trans.examples_es ? [trans.examples_es] : []),
               explanation: trans.explanation || null,
             });
 
@@ -178,8 +178,8 @@ export function useWords() {
       .insert({
         word_id: wordId,
         translation_es: translation.translation_es,
-        example_en: Array.isArray(translation.example_en) ? translation.example_en : (translation.example_en ? [translation.example_en] : []),
-        example_es: Array.isArray(translation.example_es) ? translation.example_es : (translation.example_es ? [translation.example_es] : []),
+        example_en: Array.isArray(translation.examples_en) ? translation.examples_en : (translation.examples_en ? [translation.examples_en] : []),
+        example_es: Array.isArray(translation.examples_es) ? translation.examples_es : (translation.examples_es ? [translation.examples_es] : []),
         explanation: translation.explanation || null,
       });
 
