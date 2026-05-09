@@ -63,7 +63,7 @@ export default function Practice() {
   const [sessionComplete, setSessionComplete] = useState(false);
   const [showFinalize, setShowFinalize] = useState(false);
   const TOTAL_WORDS = 5;
-  const nextButtonRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (words.length > 0 && !currentWord) {
@@ -90,10 +90,14 @@ export default function Practice() {
   }, [currentTranslation]);
 
   useEffect(() => {
-    if (answered && !waitingForRetry && !showFinalize) {
-      nextButtonRef.current?.focus();
+    function onKeyDown(e) {
+      if (e.key === 'Enter' && !inputRef.current && answered && !waitingForRetry && !showFinalize) {
+        handleNext();
+      }
     }
-  }, [answered, waitingForRetry, showFinalize]);
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [answered, waitingForRetry, showFinalize, handleNext]);
 
   function generateOptions() {
     if (!currentWord || !currentTranslation) return;
@@ -274,6 +278,7 @@ export default function Practice() {
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-gray-700 font-medium mb-3">✍️ Escribe la traducción en español:</p>
                 <input
+                  ref={inputRef}
                   type="text"
                   value={writtenAnswer}
                   onChange={(e) => setWrittenAnswer(e.target.value)}
@@ -402,7 +407,6 @@ export default function Practice() {
                 </button>
               ) : (
                 <button
-                  ref={nextButtonRef}
                   onClick={handleNext}
                   className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium"
                 >
