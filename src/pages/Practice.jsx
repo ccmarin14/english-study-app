@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { usePractice } from '../hooks/usePractice';
 import ProgressBar from '../components/ProgressBar';
 import QuizOption from '../components/QuizOption';
@@ -242,12 +243,12 @@ export default function Practice() {
           <p className="text-gray-500 mt-2">
             Actualmente tienes <strong>{words.length}</strong> {words.length === 1 ? 'palabra' : 'palabras'}.
           </p>
-          <a
-            href="/word-bank"
+          <Link
+            to="/word-bank"
             className="mt-6 inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
             Ir al banco de palabras
-          </a>
+          </Link>
         </div>
       </div>
     );

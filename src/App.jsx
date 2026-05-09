@@ -141,7 +141,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/english-study-app">
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>
