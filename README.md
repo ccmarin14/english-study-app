@@ -166,6 +166,7 @@ npm run lint     # linting
 ### RF-02 · Banco de palabras personal
 - ✅ CRUD de palabras con traducciones
 - ✅ Exportar palabras al grupo
+- ✅ Exportar banco completo a Excel (.xlsx)
 
 ### RF-03 · Banco de frases personal
 - ✅ CRUD de frases asociadas a traducciones
@@ -207,7 +208,9 @@ npm run lint     # linting
 - ✅ Conductor fijo
 - ✅ Panel lateral de turno
 
----
+### RF-12 · Eliminar banco personal completo
+- ✅ Eliminar todas las palabras con confirmación
+- ✅ Grupos y progreso grupal no se ven afectados
 
 ## Estados del proyecto
 

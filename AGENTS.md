@@ -21,7 +21,7 @@ Antes de implementar cualquier módulo, leer la sección correspondiente del Tec
 - **Backend / DB:** Supabase (PostgreSQL + Auth + RLS)
 - **Routing:** react-router-dom
 - **Excel:** librería `xlsx` (solo para importación y plantilla)
-- **Auth:** Google OAuth únicamente — sin email/password
+- **Auth:** Email/Password (Supabase Auth) — usuarios creados por administrador
 
 ---
 
@@ -34,7 +34,7 @@ Seguir el orden del Technical Spec. No saltar pasos.
 2. Schema SQL + migraciones   → sección 2
 3. RLS policies               → sección 3
 4. Seeds de desarrollo        → sección 5
-5. Auth (Google OAuth)        → sección 6.2
+5. Auth (Email/Password)       → sección 6.2
 6. Banco personal             → RF-02, RF-03 + queries sección 4.1 y 4.2
 7. Práctica individual        → RF-04, RF-05 + queries sección 4.3
 8. Grupos                     → RF-06, RF-07 + queries sección 4.4, 4.5, 4.6

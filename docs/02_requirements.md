@@ -30,6 +30,7 @@
   - Ver archivadas: ✅ (toggle en banco)
   - Restaurar: ✅
 - Al crear una palabra, el usuario puede elegir exportarla a su grupo (si pertenece a uno) ✅
+- El usuario puede exportar todo su banco personal a un archivo .xlsx descargable con el mismo formato que la plantilla de importación ✅
 
 ## **RF-03 · Banco de frases personal**
 - Cada usuario tiene su propio banco de frases ✅

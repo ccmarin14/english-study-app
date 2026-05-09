@@ -156,12 +156,15 @@
 | Browser confirm() en Groups | Las pruebas automatizadas no podían interactuar con alert/confirm nativos | Reemplazado por modal React custom | ✅ Corregido |
 | createSession race condition | members del estado podía no estar sincronizado al crear sesión | Se obtiene members directamente de DB antes de crear turns | ✅ Corregido |
 | Session turns RLS 406 error | session_turns retornaba 406 Not Acceptable | Creada función RPC get_session_turns y deshabilitado RLS en tablas session_* | ✅ Corregido |
+| Enter no funcionaba en resultado | En práctica, el botón Siguiente no respondía a Enter | Agregado auto-focus en botón Siguiente al mostrar resultado | ✅ Corregido |
+| Ejemplos como arrays rotos | example_en/example_es se guardaban como strings planos | Migrados a text[], corregidos inserts en useWords e importWords | ✅ Corregido |
 
 ## Bugs corregidos adicionalmente
 
 | **Bug** | **Descripción** | **Fix** | **Estado** |
 | :- | :- | :- | :-: |
 | Avance automático en sesiones | Pasos no avanzaban automáticamente al fallar | Añadido setTimeout para avanzar después de 2s | ✅ Corregido |
+| Auto-focus en práctica | El input no se enfocaba al cargar una nueva palabra | Agregado useEffect con focus en input al cambiar palabra | ✅ Corregido |
 
 ## Bugs pendientes
 
@@ -169,26 +172,41 @@
 | :- | :- | :-: |
 | Modal presencial no responde | Selector de conductor y botón iniciar no funcionan | UI no responde correctamente | 🔧 Investigando |
 
+# **F-09 · Exportación a Excel / UX / Dashboard**
+
+|**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
+| :- | :- | :-: | :-: |
+|**Exportar banco a Excel**|Se descarga un archivo .xlsx con todas las palabras activas y sus traducciones|☑ OK ✅|Botón Exportar genera mis_palabras.xlsx con el formato correcto|
+|**Dashboard — progreso por niveles**|El dashboard muestra barras de progreso con colores por nivel (0-5)|☑ OK ✅|Barras clickeables que filtran el banco por nivel|
+|**Dashboard — tarjetas de resumen**|Se muestran total de palabras, sin practicar, y grupo actual|☑ OK ✅|3 tarjetas con datos en tiempo real|
+|**Práctica — tecla Enter**|Enter avanza en todas las pantallas (resultado, quiz, sesión completada)|☑ OK ✅|Auto-focus en botón Siguiente|
+|**Práctica — auto-focus input**|El input de escritura se enfoca automáticamente al cargar cada palabra|☑ OK ✅|useEffect con focus() en el input|
+|**Eliminar todo el banco**|Botón Eliminar todo con confirmación; elimina palabras y progreso; grupos no afectados|☑ OK ✅|Modal con conteo de palabras y ProgressModal durante operación|
+|**Importación — modal con progreso**|Modal con backdrop difuminado, barra de progreso y palabra actual|☑ OK ✅|ImportProgressModal con backdrop-blur-sm|
+|**Importación — resumen**|Al finalizar se muestra: filas procesadas, palabras creadas, traducciones añadidas, omitidas|☑ OK ✅|Modal con 4 contadores|
+
 # **Resumen de verificación**
 
 |**Flujo**|**Total**|**OK + ⚠️Parcial**|
 | :- | :- | :- |
 |F-01 · Autenticación|5|5 OK|
-|F-02 · Banco personal|7|7 OK|
+|F-02 · Banco personal|8|8 OK|
 |F-03 · Práctica individual|10|10 OK|
 |F-04 · Grupos|13|6 OK + 1 ⚠️|
 |F-05 · Sesión remota|12|10 OK + 2 ⚠️|
 |F-06 · Sesión presencial|15|7 OK + 4 ⚠️|
 |F-07 · Casos borde|9|6 OK + 3 ⚠️|
 |F-08 · Importación Excel|12|12 OK|
+|F-09 · Exportación / UX / Dashboard|8|8 OK|
 
-**TOTAL: 63 OK + 10 ⚠️ Parcial = 73/83 funcional (87.9%)**
+**TOTAL: 72 OK + 10 ⚠️ Parcial = 82/91 funcional (90.1%)**
 
-**Progreso OK: 63/83 (75.9%)** - MVP: F-01✅ F-02✅ F-03✅
+**Progreso OK: 72/91 (79.1%)** - MVP: F-01✅ F-02✅ F-03✅
 
-**F-02 Completado: 7/7 ✅**
+**F-02 Completado: 8/8 ✅**
 **F-03 Completado: 10/10 ✅**
 **F-08 Completado: 12/12 ✅**
+**F-09 Completado: 8/8 ✅**
 
 ## Datos de prueba creados
 
@@ -205,7 +223,7 @@
 | Editar palabra | UI no tiene botón de editar palabra |
 | Login password | El campo de contraseña necesita fill_form para funcionar correctamente |
 
-|Criterio de aceptación del MVP: 100% de F-01, F-02 y F-03 en OK. Mínimo 85% del total (70/83). Todos los casos de F-07 verificados.|
+|Criterio de aceptación del MVP: 100% de F-01, F-02 y F-03 en OK. Mínimo 85% del total. Todos los casos de F-07 verificados.|
 | :- |
 
 
