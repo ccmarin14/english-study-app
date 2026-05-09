@@ -267,12 +267,20 @@ export default function Practice() {
           <p className="text-2xl font-bold text-indigo-600">
             {practiceStats.correct}/{practiceStats.total} correctas
           </p>
-          <button
-            onClick={handleRestart}
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Practicar de nuevo
-          </button>
+          <div className="flex flex-col items-center gap-3">
+            <Link
+              to="/dashboard"
+              className="w-52 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 inline-block"
+            >
+              ← Ir al inicio
+            </Link>
+            <button
+              onClick={handleRestart}
+              className="w-52 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
+              Practicar de nuevo
+            </button>
+          </div>
         </div>
       </div>
     );
