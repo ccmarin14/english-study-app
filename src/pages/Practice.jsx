@@ -91,13 +91,17 @@ export default function Practice() {
 
   useEffect(() => {
     function onKeyDown(e) {
-      if (e.key === 'Enter' && !inputRef.current && answered && !showFinalize) {
-        handleNext();
+      if (e.key === 'Enter' && !inputRef.current && answered) {
+        if (showFinalize) {
+          handleFinalize();
+        } else {
+          handleNext();
+        }
       }
     }
     document.addEventListener('keydown', onKeyDown, true);
     return () => document.removeEventListener('keydown', onKeyDown, true);
-  }, [answered, showFinalize, handleNext]);
+  }, [answered, showFinalize, handleNext, handleFinalize]);
 
   useEffect(() => {
     if (!answered && !waitingForRetry && currentWord) {
