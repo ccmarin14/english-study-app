@@ -99,6 +99,12 @@ export default function Practice() {
     return () => document.removeEventListener('keydown', onKeyDown, true);
   }, [answered, showFinalize, handleNext]);
 
+  useEffect(() => {
+    if (!answered && !waitingForRetry && currentWord) {
+      inputRef.current?.focus();
+    }
+  }, [currentWord, answered, waitingForRetry]);
+
   function generateOptions() {
     if (!currentWord || !currentTranslation) return;
 
