@@ -48,9 +48,11 @@ export default function Practice() {
     selectNextWord,
     recordAnswer,
     resetStats,
+    setCurrentTranslation,
   } = usePractice();
 
-  const [showQuiz, setShowQuiz] = useState(false);
+  const [translationIdx, setTranslationIdx] = useState(0);
+  const [waitingForRetry, setWaitingForRetry] = useState(false);
   const [answered, setAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -69,6 +71,15 @@ export default function Practice() {
   }, [words, currentWord]);
 
   useEffect(() => {
+    if (currentWord && currentTranslation) {
+      const idx = currentWord.word_translations.findIndex(
+        t => t.id === currentTranslation.id
+      );
+      setTranslationIdx(idx >= 0 ? idx : 0);
+    }
+  }, [currentWord, currentTranslation]);
+
+  useEffect(() => {
     if (currentTranslation?.example_en?.length > 1) {
       const idx = Math.floor(Math.random() * currentTranslation.example_en.length);
       setExampleIdx(idx);
@@ -78,13 +89,14 @@ export default function Practice() {
   }, [currentTranslation]);
 
   useEffect(() => {
-    if (currentWord && currentTranslation && showQuiz) {
-      generateOptions();
+    function onKeyDown(e) {
+      if (e.key === 'Enter' && answered && !waitingForRetry && !showFinalize) {
+        handleNext();
+      }
     }
-  }, [currentWord, currentTranslation, showQuiz]);
-
-  // Removed: useEffect that reset states on currentWord change
-  // Now states only reset when clicking "Siguiente"
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [answered, waitingForRetry, showFinalize, handleNext]);
 
   function generateOptions() {
     if (!currentWord || !currentTranslation) return;
@@ -102,9 +114,24 @@ export default function Practice() {
     setOptions(allOptions);
   }
 
+  function cycleTranslation(delta) {
+    const translations = currentWord?.word_translations;
+    if (!translations || translations.length <= 1) return;
+    const newIdx = (translationIdx + delta + translations.length) % translations.length;
+    setTranslationIdx(newIdx);
+    setCurrentTranslation(translations[newIdx]);
+    setExampleIdx(0);
+  }
+
+  function cycleExample(delta) {
+    const examples = currentTranslation?.example_en;
+    if (!examples || !Array.isArray(examples) || examples.length <= 1) return;
+    const newIdx = (exampleIdx + delta + examples.length) % examples.length;
+    setExampleIdx(newIdx);
+  }
+
   function handleNext() {
-    // Reset all states for next word
-    setShowQuiz(false);
+    setWaitingForRetry(false);
     setAnswered(false);
     setIsCorrect(false);
     setSelectedOption(null);
@@ -115,19 +142,24 @@ export default function Practice() {
 
   function handleWrittenSubmit() {
     const userAnswer = writtenAnswer.trim();
-    const correctAnswer = currentTranslation?.translation_es || '';
-    const correct = isFuzzyMatch(userAnswer, correctAnswer);
-    setAnswered(true);
-    setIsCorrect(correct);
-    recordAnswer(correct);
-  
-    // Detect if it's the last word (practicedCount is 0-4, last is 4)
-    const willBeLast = practicedCount === TOTAL_WORDS - 1;
-  
-    if (!willBeLast) {
-      setPracticedCount(prev => prev + 1);
+    const correct = currentWord.word_translations.some(
+      t => isFuzzyMatch(userAnswer, t.translation_es)
+    );
+
+    if (correct) {
+      setAnswered(true);
+      setIsCorrect(true);
+      recordAnswer(true);
+
+      const willBeLast = practicedCount === TOTAL_WORDS - 1;
+      if (!willBeLast) {
+        setPracticedCount(prev => prev + 1);
+      } else {
+        setShowFinalize(true);
+      }
     } else {
-      setShowFinalize(true);
+      setWaitingForRetry(true);
+      generateOptions();
     }
   }
 
@@ -146,10 +178,6 @@ export default function Practice() {
     } else {
       setShowFinalize(true);
     }
-  }
-
-  function handleShowQuiz() {
-    setShowQuiz(true);
   }
 
   function handleFinalize() {
@@ -217,6 +245,10 @@ export default function Practice() {
               setPracticedCount(0);
               setSessionComplete(false);
               setShowFinalize(false);
+              setWaitingForRetry(false);
+              setAnswered(false);
+              setIsCorrect(false);
+              setWrittenAnswer('');
               selectNextWord();
             }}
             className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
@@ -240,7 +272,7 @@ export default function Practice() {
             <h2 className="text-4xl font-bold text-gray-900">{currentWord.word_en}</h2>
           </div>
 
-          {!answered ? (
+          {!answered && !waitingForRetry ? (
             <>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-gray-700 font-medium mb-3">✍️ Escribe la traducción en español:</p>
@@ -260,33 +292,25 @@ export default function Practice() {
                   Verificar
                 </button>
               </div>
-
-              {!showQuiz && words.length >= 5 && (
-                <div className="text-center">
-                  <button
-                    onClick={handleShowQuiz}
-                    className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                  >
-                    ¿No sabes? Ver opciones
-                  </button>
-                </div>
-              )}
-
-              {showQuiz && (
-                <div className="space-y-3">
-                  <p className="text-center text-gray-600 text-sm font-medium">Selecciona la traducción correcta:</p>
-                  {options.map((option) => (
-                    <QuizOption
-                      key={option}
-                      option={option}
-                      onClick={handleQuizAnswer}
-                      disabled={false}
-                      isCorrect={option === currentTranslation?.translation_es}
-                      showResult={false}
-                    />
-                  ))}
-                </div>
-              )}
+            </>
+          ) : !answered && waitingForRetry ? (
+            <>
+              <div className="p-4 bg-red-50 rounded-lg">
+                <p className="text-red-700 font-semibold text-lg">❌ Incorrecta. Intenta de nuevo:</p>
+              </div>
+              <div className="space-y-3">
+                <p className="text-center text-gray-600 text-sm font-medium">Selecciona la traducción correcta:</p>
+                {options.map((option) => (
+                  <QuizOption
+                    key={option}
+                    option={option}
+                    onClick={handleQuizAnswer}
+                    disabled={false}
+                    isCorrect={option === currentTranslation?.translation_es}
+                    showResult={false}
+                  />
+                ))}
+              </div>
             </>
           ) : (
             <>
@@ -294,13 +318,35 @@ export default function Practice() {
                 {isCorrect ? (
                   <p className="text-green-700 font-semibold text-lg">✅ ¡Correcto!</p>
                 ) : (
-                  <p className="text-red-700 font-semibold text-lg">
-                    ❌ Era: <span className="underline">{currentTranslation.translation_es}</span>
-                  </p>
+                  <p className="text-red-700 font-semibold text-lg">❌ Incorrecta</p>
                 )}
               </div>
 
               <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                {currentWord.word_translations.length > 1 && (
+                  <div className="flex items-center justify-center gap-3">
+                    <button
+                      onClick={() => cycleTranslation(-1)}
+                      className="p-2 hover:bg-gray-200 rounded transition-colors"
+                      aria-label="Traducción anterior"
+                    >
+                      <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <p className="text-gray-900 font-medium text-lg">{currentTranslation.translation_es}</p>
+                    <button
+                      onClick={() => cycleTranslation(1)}
+                      className="p-2 hover:bg-gray-200 rounded transition-colors"
+                      aria-label="Siguiente traducción"
+                    >
+                      <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                  </div>
+                )}
+
+                {currentWord.word_translations.length <= 1 && (
+                  <p className="text-gray-900 font-medium text-lg text-center">{currentTranslation.translation_es}</p>
+                )}
+
                 {currentWord.phonetic && (
                   <p className="text-gray-700">
                     <span className="font-medium">🔊 Pronunciación:</span> {currentWord.phonetic}
@@ -308,19 +354,39 @@ export default function Practice() {
                 )}
 
                 {currentTranslation.example_en && (
-                  <p className="text-gray-700">
-                    <span className="font-medium">📝 Frase de uso:</span>{' '}
-                    {Array.isArray(currentTranslation.example_en)
-                      ? currentTranslation.example_en[exampleIdx]
-                      : currentTranslation.example_en}
-                    {currentTranslation.example_es && (
-                      <span className="text-gray-500"> →{' '}
-                        {Array.isArray(currentTranslation.example_es)
-                          ? currentTranslation.example_es[exampleIdx]
-                          : currentTranslation.example_es}
-                      </span>
+                  <div className="flex items-start gap-2">
+                    {Array.isArray(currentTranslation.example_en) && currentTranslation.example_en.length > 1 && (
+                      <button
+                        onClick={() => cycleExample(-1)}
+                        className="p-2 hover:bg-gray-200 rounded transition-colors shrink-0 mt-0.5"
+                        aria-label="Ejemplo anterior"
+                      >
+                        <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                      </button>
                     )}
-                  </p>
+                    <p className="text-gray-700 flex-1">
+                      <span className="font-medium">📝 Frase de uso:</span>{' '}
+                      {Array.isArray(currentTranslation.example_en)
+                        ? currentTranslation.example_en[exampleIdx]
+                        : currentTranslation.example_en}
+                      {currentTranslation.example_es && (
+                        <span className="text-gray-500"> →{' '}
+                          {Array.isArray(currentTranslation.example_es)
+                            ? currentTranslation.example_es[exampleIdx]
+                            : currentTranslation.example_es}
+                        </span>
+                      )}
+                    </p>
+                    {Array.isArray(currentTranslation.example_en) && currentTranslation.example_en.length > 1 && (
+                      <button
+                        onClick={() => cycleExample(1)}
+                        className="p-2 hover:bg-gray-200 rounded transition-colors shrink-0 mt-0.5"
+                        aria-label="Siguiente ejemplo"
+                      >
+                        <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 {currentTranslation.explanation && (

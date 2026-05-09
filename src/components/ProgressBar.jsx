@@ -1,12 +1,6 @@
 export default function ProgressBar({ current, total = 5 }) {
   const percentage = (current / total) * 100;
 
-  const getColor = () => {
-    if (current <= 1) return 'bg-red-500';
-    if (current <= 3) return 'bg-yellow-500';
-    return 'bg-green-500';
-  };
-
   return (
     <div className="w-full">
       <div className="flex justify-between text-xs text-gray-500 mb-1">
@@ -15,7 +9,7 @@ export default function ProgressBar({ current, total = 5 }) {
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div
-          className={`h-2 rounded-full transition-all duration-300 ${getColor()}`}
+          className="h-2 rounded-full transition-all duration-300 bg-indigo-600"
           style={{ width: `${percentage}%` }}
         />
       </div>

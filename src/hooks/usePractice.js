@@ -149,6 +149,7 @@ export function usePractice() {
     words,
     currentWord,
     currentTranslation,
+    setCurrentTranslation,
     loading,
     error,
     practiceStats,
