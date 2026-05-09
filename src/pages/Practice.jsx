@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePractice } from '../hooks/usePractice';
 import ProgressBar from '../components/ProgressBar';
 import QuizOption from '../components/QuizOption';
@@ -63,6 +63,7 @@ export default function Practice() {
   const [sessionComplete, setSessionComplete] = useState(false);
   const [showFinalize, setShowFinalize] = useState(false);
   const TOTAL_WORDS = 5;
+  const nextButtonRef = useRef(null);
 
   useEffect(() => {
     if (words.length > 0 && !currentWord) {
@@ -87,6 +88,12 @@ export default function Practice() {
       setExampleIdx(0);
     }
   }, [currentTranslation]);
+
+  useEffect(() => {
+    if (answered && !waitingForRetry && !showFinalize) {
+      nextButtonRef.current?.focus();
+    }
+  }, [answered, waitingForRetry, showFinalize]);
 
   function generateOptions() {
     if (!currentWord || !currentTranslation) return;
@@ -303,11 +310,7 @@ export default function Practice() {
               </div>
             </>
           ) : (
-            <div onKeyDown={(e) => {
-              if (e.key === 'Enter' && !showFinalize) {
-                handleNext();
-              }
-            }}>
+            <>
               <div className={`p-4 rounded-lg text-center ${isCorrect ? 'bg-green-50' : 'bg-red-50'}`}>
                 {isCorrect ? (
                   <p className="text-green-700 font-semibold text-lg">✅ ¡Correcto!</p>
@@ -399,13 +402,14 @@ export default function Practice() {
                 </button>
               ) : (
                 <button
+                  ref={nextButtonRef}
                   onClick={handleNext}
                   className="w-full py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium"
                 >
                   Siguiente →
                 </button>
               )}
-            </div>
+            </>
           )}
         </div>
       )}
