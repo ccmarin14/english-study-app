@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useWords } from '../hooks/useWords';
 import { useGroups } from '../hooks/useGroups';
 import { useGroupWords } from '../hooks/useGroupWords';
+import { useAuth } from '../context/AuthContext';
+import { downloadExport } from '../lib/importWords';
 import WordCard from '../components/WordCard';
 import ProgressModal from '../components/ProgressModal';
 
 export default function WordBank() {
+  const { user } = useAuth();
   const { words, loading, archiveWord, fetchArchivedWords, unarchiveWord, refetch, deleteAllUserWords } = useWords();
   const { currentGroup } = useGroups();
   const { exportWord, refetch: refetchGroupWords } = useGroupWords(currentGroup?.id);
@@ -62,6 +65,14 @@ export default function WordBank() {
 
   const handleWordClick = (word) => {
     navigate('/edit-word', { state: { selectedWord: word, isFromArchive: showArchived } });
+  };
+
+  const handleExportBank = async () => {
+    try {
+      await downloadExport(user.id);
+    } catch (err) {
+      console.error('Error al exportar:', err);
+    }
   };
 
   const handleDeleteAll = async () => {
@@ -167,12 +178,21 @@ export default function WordBank() {
                   🗑️ Eliminar todo
                 </button>
               )}
-              <button
-                onClick={() => navigate('/import')}
-                className="px-3 py-2 text-sm text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
-              >
-                📥 Importar
-              </button>
+              {words.length === 0 ? (
+                <button
+                  onClick={() => navigate('/import')}
+                  className="px-3 py-2 text-sm text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+                >
+                  📥 Importar
+                </button>
+              ) : (
+                <button
+                  onClick={handleExportBank}
+                  className="px-3 py-2 text-sm text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50"
+                >
+                  📤 Exportar
+                </button>
+              )}
               <button
                 onClick={() => navigate('/add-word')}
                 className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"

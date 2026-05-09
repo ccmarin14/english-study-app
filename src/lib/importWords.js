@@ -70,6 +70,41 @@ export function groupByWord(rows) {
   };
 }
 
+function formatExamples(examples) {
+  if (!examples || !Array.isArray(examples) || examples.length === 0) return '';
+  if (examples.length === 1) return examples[0];
+  return JSON.stringify(examples);
+}
+
+export async function downloadExport(userId, supabaseClient = supabase) {
+  const { data, error } = await supabaseClient
+    .from('words')
+    .select(`*, word_translations(*)`)
+    .eq('owner_id', userId)
+    .eq('status', 'active');
+
+  if (error) throw error;
+
+  const rows = [];
+  for (const word of data) {
+    for (const t of word.word_translations) {
+      rows.push({
+        word_en: word.word_en,
+        phonetic: word.phonetic || '',
+        translation_es: t.translation_es,
+        example_en: formatExamples(t.example_en),
+        example_es: formatExamples(t.example_es),
+        explanation: t.explanation || '',
+      });
+    }
+  }
+
+  const ws = XLSX.utils.json_to_sheet(rows, { header: ['word_en', 'phonetic', 'translation_es', 'example_en', 'example_es', 'explanation'] });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Palabras');
+  XLSX.writeFile(wb, 'mis_palabras.xlsx');
+}
+
 export function downloadTemplate() {
   const headers = ['word_en', 'phonetic', 'translation_es', 'example_en', 'example_es', 'explanation'];
   const examples = [
