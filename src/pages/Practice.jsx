@@ -88,16 +88,6 @@ export default function Practice() {
     }
   }, [currentTranslation]);
 
-  useEffect(() => {
-    function onKeyDown(e) {
-      if (e.key === 'Enter' && answered && !waitingForRetry && !showFinalize) {
-        handleNext();
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [answered, waitingForRetry, showFinalize, handleNext]);
-
   function generateOptions() {
     if (!currentWord || !currentTranslation) return;
 
@@ -313,7 +303,11 @@ export default function Practice() {
               </div>
             </>
           ) : (
-            <>
+            <div onKeyDown={(e) => {
+              if (e.key === 'Enter' && !showFinalize) {
+                handleNext();
+              }
+            }}>
               <div className={`p-4 rounded-lg text-center ${isCorrect ? 'bg-green-50' : 'bg-red-50'}`}>
                 {isCorrect ? (
                   <p className="text-green-700 font-semibold text-lg">✅ ¡Correcto!</p>
@@ -411,7 +405,7 @@ export default function Practice() {
                   Siguiente →
                 </button>
               )}
-            </>
+            </div>
           )}
         </div>
       )}
