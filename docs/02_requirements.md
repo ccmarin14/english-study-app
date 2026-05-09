@@ -242,7 +242,7 @@ Un solo dispositivo compartido. Un conductor maneja el teclado durante toda la s
 |**P-06**|Sesión grupal remota|Flujo de turnos asíncrono por pasos con resumen final|
 |**P-07**|Sesión grupal presencial|Un dispositivo, panel lateral de turno, conductor registra respuestas|
 |**P-08**|Importar palabras|Subir archivo .xlsx, vista previa de resultados, resumen de importación y descarga de plantilla|
-|**P-09**|Añadir palabra|Formulario con traducciones, ejemplos y opción de exportar al grupo|
+|**P-09**|Añadir palabra|Wizard paso a paso (4 pasos): palabra, traducción, ejemplos + explicación, revisar y exportar al grupo|
 
 
 English Study Group App  ·  Fase 2: Requirements  ·  v1.0

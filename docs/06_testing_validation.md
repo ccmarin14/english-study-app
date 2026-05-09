@@ -29,7 +29,8 @@
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
-|**Crear palabra**|La palabra aparece en el banco personal con sus traducciones y ejemplos|☐ OK  ☐ Falla||
+|**Crear palabra (wizard)**|El wizard paso a paso guía al usuario: 1) palabra, 2) traducción, 3) ejemplos + explicación, 4) revisar. La palabra aparece en el banco personal al guardar|☐ OK  ☐ Falla|Wizard de 4 pasos con step indicator visual y navegación Atrás/Siguiente|
+|**Crear múltiples traducciones (wizard)**|Al terminar ejemplos, el wizard pregunta si quiere otra traducción; si acepta, repite pasos 2-3; al finalizar todo, guarda todas las traducciones|☐ OK  ☐ Falla||
 |**Crear múltiples traducciones**|Una sama palabra puede tener 2 o más traducciones independientes|☑ OK ✅|Importadas: water (agua, océano), apple (manzana, pepita), run (correr, ejecutar)|
 |**Crear frase asociada**|Una frase queda vinculada a una traducción específica|☐ OK ✅|Probado: sunrise con ejemplo "The sunrise was beautiful today."|
 |**Editar palabra**|Los cambios se reflejan inmediatamente en el banco|☐ Pendiente|No implementado en UI|
