@@ -91,17 +91,21 @@ export default function Practice() {
 
   useEffect(() => {
     function onKeyDown(e) {
-      if (e.key === 'Enter' && !inputRef.current && answered) {
-        if (showFinalize) {
-          handleFinalize();
-        } else {
-          handleNext();
+      if (e.key === 'Enter' && !inputRef.current) {
+        if (sessionComplete) {
+          handleRestart();
+        } else if (answered) {
+          if (showFinalize) {
+            handleFinalize();
+          } else {
+            handleNext();
+          }
         }
       }
     }
     document.addEventListener('keydown', onKeyDown, true);
     return () => document.removeEventListener('keydown', onKeyDown, true);
-  }, [answered, showFinalize, handleNext, handleFinalize]);
+  }, [sessionComplete, answered, showFinalize, handleNext, handleFinalize, handleRestart]);
 
   useEffect(() => {
     if (!answered && !waitingForRetry && currentWord) {
@@ -195,6 +199,18 @@ export default function Practice() {
     setSessionComplete(true);
   }
 
+  function handleRestart() {
+    resetStats();
+    setPracticedCount(0);
+    setSessionComplete(false);
+    setShowFinalize(false);
+    setWaitingForRetry(false);
+    setAnswered(false);
+    setIsCorrect(false);
+    setWrittenAnswer('');
+    selectNextWord();
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -251,17 +267,7 @@ export default function Practice() {
             {practiceStats.correct}/{practiceStats.total} correctas
           </p>
           <button
-            onClick={() => {
-              resetStats();
-              setPracticedCount(0);
-              setSessionComplete(false);
-              setShowFinalize(false);
-              setWaitingForRetry(false);
-              setAnswered(false);
-              setIsCorrect(false);
-              setWrittenAnswer('');
-              selectNextWord();
-            }}
+            onClick={handleRestart}
             className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
             Practicar de nuevo
