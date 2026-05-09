@@ -95,8 +95,8 @@ export default function Practice() {
         handleNext();
       }
     }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    document.addEventListener('keydown', onKeyDown, true);
+    return () => document.removeEventListener('keydown', onKeyDown, true);
   }, [answered, waitingForRetry, showFinalize, handleNext]);
 
   function generateOptions() {
