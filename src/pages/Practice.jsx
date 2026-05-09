@@ -286,6 +286,9 @@ export default function Practice() {
 
       {currentWord && currentTranslation && (
         <div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
+          <div className="md:hidden">
+            <ProgressBar current={practicedCount} total={TOTAL_WORDS} />
+          </div>
           <div className="text-center">
             <h2 className="text-4xl font-bold text-gray-900">{currentWord.word_en}</h2>
           </div>
@@ -436,7 +439,7 @@ export default function Practice() {
       )}
 
       {currentWord && (
-        <div className="bg-white rounded-lg shadow-sm p-4">
+        <div className="hidden md:block bg-white rounded-lg shadow-sm p-4">
           <ProgressBar current={practicedCount} total={TOTAL_WORDS} />
         </div>
       )}
