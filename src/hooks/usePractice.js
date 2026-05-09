@@ -99,36 +99,19 @@ export function usePractice() {
     // Update current word local state
     setCurrentWord(prev => prev ? { ...prev, level, correct_streak } : null);
 
-    // Persist to Supabase (fire and forget - don't block UI)
-    supabase
+    const { error: upsertError } = await supabase
       .from('user_word_progress')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('word_id', currentWord.id)
-      .single()
-      .then(({ data: existingProgress }) => {
-        if (existingProgress) {
-          return supabase
-            .from('user_word_progress')
-            .update({
-              level,
-              correct_streak,
-              last_practiced_at: new Date().toISOString(),
-            })
-            .eq('id', existingProgress.id);
-        } else {
-          return supabase
-            .from('user_word_progress')
-            .insert({
-              user_id: user.id,
-              word_id: currentWord.id,
-              level,
-              correct_streak,
-              last_practiced_at: new Date().toISOString(),
-            });
-        }
-      });
-    // NO longer calling fetchWordsForPractice() here to avoid refresh
+      .upsert({
+        user_id: user.id,
+        word_id: currentWord.id,
+        level,
+        correct_streak,
+        last_practiced_at: new Date().toISOString(),
+      }, { onConflict: 'user_id, word_id' });
+
+    if (upsertError) {
+      console.error('Error al guardar progreso:', upsertError);
+    }
   }
 
   function calcNewProgress(current, isCorrect) {

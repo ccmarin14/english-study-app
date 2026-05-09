@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useWords } from '../hooks/useWords';
 import { useGroups } from '../hooks/useGroups';
 import { useGroupWords } from '../hooks/useGroupWords';
@@ -20,13 +20,30 @@ export default function WordBank() {
   const [showArchived, setShowArchived] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const levelFilter = searchParams.get('level');
 
-  const filteredWords = words.filter(word =>
-    word.word_en.toLowerCase().includes(search.toLowerCase()) ||
-    word.word_translations?.some(t =>
-      t.translation_es.toLowerCase().includes(search.toLowerCase())
-    )
-  );
+  const filteredWords = useMemo(() => {
+    let result = words;
+
+    if (levelFilter !== null) {
+      const lvl = parseInt(levelFilter, 10);
+      if (!isNaN(lvl) && lvl >= 0 && lvl <= 5) {
+        result = result.filter(w => w.level === lvl);
+      }
+    }
+
+    if (search) {
+      result = result.filter(word =>
+        word.word_en.toLowerCase().includes(search.toLowerCase()) ||
+        word.word_translations?.some(t =>
+          t.translation_es.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    }
+
+    return result;
+  }, [words, search, levelFilter]);
 
   const handleArchive = async (wordId) => {
     setConfirmArchive(wordId);
@@ -50,6 +67,7 @@ export default function WordBank() {
       await fetchArchivedWords();
     }
     setShowArchived(!showArchived);
+    setSearchParams({});
   };
 
   const handleExport = async (wordId) => {
@@ -63,16 +81,16 @@ export default function WordBank() {
     }
   };
 
-  const handleWordClick = (word) => {
-    navigate('/edit-word', { state: { selectedWord: word, isFromArchive: showArchived } });
-  };
-
   const handleExportBank = async () => {
     try {
       await downloadExport(user.id);
     } catch (err) {
       console.error('Error al exportar:', err);
     }
+  };
+
+  const handleWordClick = (word) => {
+    navigate('/edit-word', { state: { selectedWord: word, isFromArchive: showArchived } });
   };
 
   const handleDeleteAll = async () => {
@@ -203,6 +221,27 @@ export default function WordBank() {
           )}
         </div>
       </div>
+
+      {levelFilter !== null && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">Filtrando por nivel:</span>
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
+            Nivel {levelFilter}
+            <button
+              onClick={() => setSearchParams({})}
+              className="ml-1 hover:text-indigo-900"
+            >
+              ✕
+            </button>
+          </span>
+          <button
+            onClick={() => setSearchParams({})}
+            className="text-xs text-gray-500 hover:text-gray-700"
+          >
+            Limpiar filtro
+          </button>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow-sm p-4">
         <input

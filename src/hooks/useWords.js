@@ -25,7 +25,20 @@ export function useWords() {
     if (error) {
       setError(error.message);
     } else {
-      setWords(data || []);
+      const { data: progress } = await supabase
+        .from('user_word_progress')
+        .select('word_id, level')
+        .eq('user_id', user.id);
+
+      const progressMap = {};
+      progress?.forEach(p => { progressMap[p.word_id] = p.level; });
+
+      const enriched = (data || []).map(w => ({
+        ...w,
+        level: progressMap[w.id] ?? 0,
+      }));
+
+      setWords(enriched);
     }
     setLoading(false);
   }
