@@ -40,7 +40,8 @@ function isFuzzyMatch(answer, correct, maxDistance = 2) {
 
 export default function Practice() {
   const {
-    words,
+    allWords,
+    sessionWords,
     currentWord,
     currentTranslation,
     loading,
@@ -49,9 +50,11 @@ export default function Practice() {
     selectNextWord,
     recordAnswer,
     resetStats,
+    resetSession,
     setCurrentTranslation,
   } = usePractice();
 
+  const TOTAL_WORDS = sessionWords.length;
   const [translationIdx, setTranslationIdx] = useState(0);
   const [waitingForRetry, setWaitingForRetry] = useState(false);
   const [answered, setAnswered] = useState(false);
@@ -63,14 +66,7 @@ export default function Practice() {
   const [practicedCount, setPracticedCount] = useState(0);
   const [sessionComplete, setSessionComplete] = useState(false);
   const [showFinalize, setShowFinalize] = useState(false);
-  const TOTAL_WORDS = 5;
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (words.length > 0 && !currentWord) {
-      selectNextWord();
-    }
-  }, [words, currentWord]);
 
   useEffect(() => {
     if (currentWord && currentTranslation) {
@@ -118,7 +114,7 @@ export default function Practice() {
     if (!currentWord || !currentTranslation) return;
 
     const correct = currentTranslation.translation_es;
-    const otherTranslations = words
+    const otherTranslations = allWords
       .flatMap(w => w.word_translations || [])
       .map(t => t.translation_es)
       .filter(t => t !== correct);
@@ -202,6 +198,7 @@ export default function Practice() {
 
   function handleRestart() {
     resetStats();
+    resetSession();
     setPracticedCount(0);
     setSessionComplete(false);
     setShowFinalize(false);
@@ -209,7 +206,6 @@ export default function Practice() {
     setAnswered(false);
     setIsCorrect(false);
     setWrittenAnswer('');
-    selectNextWord();
   }
 
   if (loading) {
@@ -220,7 +216,7 @@ export default function Practice() {
     );
   }
 
-  if (words.length === 0) {
+  if (allWords.length === 0) {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-bold text-gray-900">No hay palabras para practicar</h2>
@@ -241,7 +237,7 @@ export default function Practice() {
             Necesitas al menos <strong>5 palabras</strong> en tu banco para iniciar una práctica.
           </p>
           <p className="text-gray-500 mt-2">
-            Actualmente tienes <strong>{words.length}</strong> {words.length === 1 ? 'palabra' : 'palabras'}.
+            Actualmente tienes <strong>{allWords.length}</strong> {allWords.length === 1 ? 'palabra' : 'palabras'}.
           </p>
           <Link
             to="/word-bank"

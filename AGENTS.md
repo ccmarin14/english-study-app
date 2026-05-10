@@ -160,6 +160,26 @@ No modificar el schema sin crear un nuevo archivo de migración.
 
 ---
 
+## Práctica individual — selección de palabras
+
+**Problema original:** En una sesión de práctica de 5 turnos, palabras podían repetirse (el mismo "run" aparecía 3 veces en 5 turnos).
+
+**Causa raíz:** `selectNextWord()` llamaba a `selectWeighted(words)` con TODAS las palabras cada turno sin excluir las ya mostradas. Además, `fetchWordsForPractice()` no tenía guarda contra doble ejecución (React StrictMode), causando que la palabra inicial cambiara tras cargar.
+
+**Solución implementada:**
+
+1. `allWords` — pool completo de palabras del usuario
+2. `sessionWords` — 5 palabras seleccionadas al iniciar la sesión mediante `pickSessionWords()`, que ejecuta `selectWeighted` **sin reemplazo** para asegurar palabras distintas
+3. `initSession(session)` — setea la primera palabra directamente en el estado (sin `useEffect`), eliminando renders intermedios
+4. `selectNextWord()` — avanza por `sessionWords[sessionIndex]` secuencialmente, sin volver a seleccionar del pool
+5. `fetchedRef` — guarda para evitar que `fetchWordsForPractice()` corra dos veces en StrictMode
+
+**Archivos modificados:**
+- `src/hooks/usePractice.js` — lógica completa de selección de sesión
+- `src/pages/Practice.jsx` — adaptación a `allWords`/`sessionWords`, eliminación de `useEffect` de inicialización
+
+---
+
 ## Lo que NO hacer
 
 - No crear tablas fuera del schema definido sin consultar

@@ -1,25 +1,61 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { calcWeight, selectWeighted } from '../lib/spacedRepetition';
 
+const SESSION_SIZE = 5;
+
 export function usePractice() {
   const { user } = useAuth();
-  const [words, setWords] = useState([]);
+  const [allWords, setAllWords] = useState([]);
+  const [sessionWords, setSessionWords] = useState([]);
+  const [sessionIndex, setSessionIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState(null);
   const [currentTranslation, setCurrentTranslation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [practiceStats, setPracticeStats] = useState({ correct: 0, total: 0 });
+  const fetchedRef = useRef(false);
 
-  const canStartPractice = words.length >= 5;
+  const canStartPractice = allWords.length >= SESSION_SIZE;
 
   useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
     fetchWordsForPractice();
   }, [user]);
 
-  async function fetchWordsForPractice() {
+  function pickSessionWords(pool, count) {
+    const remaining = [...pool];
+    const selected = [];
+    for (let i = 0; i < count; i++) {
+      if (remaining.length === 0) break;
+      const word = selectWeighted(remaining);
+      selected.push(word);
+      const idx = remaining.indexOf(word);
+      if (idx !== -1) remaining.splice(idx, 1);
+    }
+    return selected;
+  }
+
+  function initSession(session) {
+    setSessionWords(session);
+    if (session.length > 0) {
+      setSessionIndex(1);
+      const word = session[0];
+      const randomIndex = Math.floor(Math.random() * word.word_translations.length);
+      setCurrentWord(word);
+      setCurrentTranslation(word.word_translations[randomIndex]);
+    } else {
+      setSessionIndex(0);
+      setCurrentWord(null);
+      setCurrentTranslation(null);
+    }
+  }
+
+  async function fetchWordsForPractice(force = false) {
     if (!user) return;
+    if (force) fetchedRef.current = false;
 
     setLoading(true);
 
@@ -55,23 +91,23 @@ export function usePractice() {
       weight: calcWeight(progressMap[word.id]?.level ?? 0),
     }));
 
-    setWords(wordsWithProgress);
+    setAllWords(wordsWithProgress);
+
+    const session = pickSessionWords(wordsWithProgress, SESSION_SIZE);
+    initSession(session);
     setLoading(false);
   }
 
   function selectNextWord() {
-    if (words.length === 0) {
-      setCurrentWord(null);
-      setCurrentTranslation(null);
-      return;
-    }
+    if (sessionIndex >= sessionWords.length) return;
 
-    const selected = selectWeighted(words);
+    const word = sessionWords[sessionIndex];
+    setSessionIndex(prev => prev + 1);
 
-    const randomIndex = Math.floor(Math.random() * selected.word_translations.length);
-    const translation = selected.word_translations[randomIndex];
+    const randomIndex = Math.floor(Math.random() * word.word_translations.length);
+    const translation = word.word_translations[randomIndex];
 
-    setCurrentWord(selected);
+    setCurrentWord(word);
     setCurrentTranslation(translation);
   }
 
@@ -88,15 +124,13 @@ export function usePractice() {
       isCorrect
     );
 
-    // Update local state immediately so UI shows result without refresh
-    const updatedWords = words.map(w =>
+    const updatedWords = allWords.map(w =>
       w.id === currentWord.id
         ? { ...w, level, correct_streak, weight: calcWeight(level) }
         : w
     );
-    setWords(updatedWords);
+    setAllWords(updatedWords);
 
-    // Update current word local state
     setCurrentWord(prev => prev ? { ...prev, level, correct_streak } : null);
 
     const { error: upsertError } = await supabase
@@ -128,8 +162,15 @@ export function usePractice() {
     setPracticeStats({ correct: 0, total: 0 });
   }
 
+  function resetSession() {
+    const session = pickSessionWords(allWords, SESSION_SIZE);
+    initSession(session);
+  }
+
   return {
-    words,
+    allWords,
+    sessionWords,
+    sessionIndex,
     currentWord,
     currentTranslation,
     setCurrentTranslation,
@@ -139,7 +180,8 @@ export function usePractice() {
     canStartPractice,
     selectNextWord,
     recordAnswer,
-    refetch: fetchWordsForPractice,
+    refetch: () => fetchWordsForPractice(true),
     resetStats,
+    resetSession,
   };
 }
