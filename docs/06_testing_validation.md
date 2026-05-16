@@ -37,6 +37,11 @@
 |**Archivar palabra**|La palabra desaparece del banco activo pero no se elimina de la base de datos|☑ OK ✅|Probado: chair archivado - desapareció del banco activo|
 |**Exportar al grupo al crear**|Si el usuario pertenece a un grupo y marca la opción, la palabra aparece en el banco del grupo|☑ OK ✅|Probado: sunrise exportado al crear - apareció en grupo|
 |**Otro usuario no ve mis palabras**|Las palabras personales no son visibles para otros usuarios (verificar RLS)|☑ OK ✅|Probado: sin sesión → redirect a /login|
+|**Filtrar por nivel desde el banco**|Los chips de nivel 0-5 están visibles; al hacer clic se filtran solo las palabras de ese nivel con traducciones, excluyendo incompletas|☐ OK  ☐ Falla||
+|**Filtro de palabras incompletas**|Al hacer clic en "Incompletas" se muestran solo las palabras sin traducciones; las completas quedan ocultas|☐ OK  ☐ Falla||
+|**Filtros mutuamente excluyentes**|Si está activo un filtro de nivel, al activar "Incompletas" se desactiva el nivel y viceversa|☐ OK  ☐ Falla||
+|**Limpiar filtro**|El enlace "Limpiar filtro" aparece cuando hay algún filtro activo y al hacer clic restablece la vista completa del banco|☐ OK  ☐ Falla||
+|**Navegación desde Dashboard**|Al hacer clic en una barra de nivel en el Dashboard, se navega al banco con el chip de ese nivel activo|☐ OK  ☐ Falla|
 
 # **F-03 · Práctica individual**
 
@@ -206,7 +211,7 @@
 |**Flujo**|**Total**|**OK + ⚠️Parcial**|
 | :- | :- | :- |
 |F-01 · Autenticación|5|5 OK|
-|F-02 · Banco personal|8|8 OK|
+|F-02 · Banco personal|13|8 OK|
 |F-03 · Práctica individual|10|10 OK|
 |F-04 · Grupos|13|6 OK + 1 ⚠️|
 |F-05 · Sesión remota|12|10 OK + 2 ⚠️|
@@ -215,11 +220,11 @@
 |F-08 · Importación Excel|12|12 OK|
 |F-10 · Exportación / UX / Dashboard|8|8 OK|
 
-**TOTAL: 72 OK + 10 ⚠️ Parcial = 82/91 funcional (90.1%)**
+**TOTAL: 72 OK + 10 ⚠️ Parcial = 82/96 funcional (85.4%)**
 
-**Progreso OK: 72/91 (79.1%)** - MVP: F-01✅ F-02✅ F-03✅
+**Progreso OK: 72/96 (75%)** - MVP: F-01✅ F-02✅ F-03✅
 
-**F-02 Completado: 8/8 ✅**
+**F-02 Completado: 8/13 ✅** *(5 filtros nuevos pendientes de verificar)*
 **F-03 Completado: 10/10 ✅**
 **F-08 Completado: 12/12 ✅**
 **F-10 Completado: 8/8 ✅**

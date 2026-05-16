@@ -36,6 +36,7 @@
 - Al completar un borrador (añadir traducciones), la palabra se activa automáticamente ✅
 - Al crear una palabra, el usuario puede elegir exportarla a su grupo (si pertenece a uno) ✅
 - El usuario puede exportar todo su banco personal a un archivo .xlsx descargable con el mismo formato que la plantilla de importación ✅
+- Filtros visuales por nivel (0-5) y palabras incompletas, directamente en el banco, mutuamente excluyentes ✅
 
 ## **RF-03 · Banco de frases personal**
 - Cada usuario tiene su propio banco de frases ✅

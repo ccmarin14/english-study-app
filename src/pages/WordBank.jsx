@@ -24,6 +24,7 @@ export default function WordBank() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [draftAlert, setDraftAlert] = useState(location.state?.draftSaved || false);
 
+
   useEffect(() => {
     if (draftAlert) {
       const timer = setTimeout(() => setDraftAlert(false), 5000);
@@ -31,6 +32,7 @@ export default function WordBank() {
     }
   }, [draftAlert]);
   const levelFilter = searchParams.get('level');
+  const incompleteFilter = searchParams.get('incompleta') === '1';
 
   const filteredWords = useMemo(() => {
     let result = words;
@@ -38,8 +40,16 @@ export default function WordBank() {
     if (levelFilter !== null) {
       const lvl = parseInt(levelFilter, 10);
       if (!isNaN(lvl) && lvl >= 0 && lvl <= 5) {
-        result = result.filter(w => w.level === lvl);
+        result = result.filter(
+          w => w.level === lvl && w.word_translations?.length > 0
+        );
       }
+    }
+
+    if (incompleteFilter) {
+      result = result.filter(
+        word => !word.word_translations || word.word_translations.length === 0
+      );
     }
 
     if (search) {
@@ -52,7 +62,7 @@ export default function WordBank() {
     }
 
     return result;
-  }, [words, search, levelFilter]);
+  }, [words, search, levelFilter, incompleteFilter]);
 
   const handleArchive = async (wordId) => {
     setConfirmArchive(wordId);
@@ -251,26 +261,52 @@ export default function WordBank() {
         </div>
       </div>
 
-      {levelFilter !== null && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Filtrando por nivel:</span>
-          <span className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
-            Nivel {levelFilter}
+      <div className="flex flex-wrap items-center gap-2">
+        {[0, 1, 2, 3, 4, 5].map((lvl) => {
+          const isActive = levelFilter !== null && parseInt(levelFilter, 10) === lvl;
+          return (
             <button
-              onClick={() => setSearchParams({})}
-              className="ml-1 hover:text-indigo-900"
+              key={lvl}
+              onClick={() => {
+                if (isActive) {
+                  setSearchParams({});
+                } else {
+                  setSearchParams({ level: lvl });
+                }
+              }}
+              className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+                isActive
+                  ? 'bg-indigo-600 text-white border-indigo-600'
+                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+              }`}
             >
-              ✕
+              Nivel {lvl}
             </button>
-          </span>
+          );
+        })}
+
+        <button
+          onClick={() => {
+            setSearchParams(incompleteFilter ? {} : { incompleta: '1' });
+          }}
+          className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+            incompleteFilter
+              ? 'bg-amber-500 text-white border-amber-500'
+              : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+          }`}
+        >
+          Incompletas
+        </button>
+
+        {(levelFilter !== null || incompleteFilter) && (
           <button
             onClick={() => setSearchParams({})}
-            className="text-xs text-gray-500 hover:text-gray-700"
+            className="text-xs text-gray-500 hover:text-gray-700 ml-2"
           >
             Limpiar filtro
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="bg-white rounded-lg shadow-sm p-4">
         <input
