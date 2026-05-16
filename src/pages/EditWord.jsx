@@ -143,10 +143,6 @@ export default function EditWord() {
     }
 
     const validTranslations = word.translations.filter(t => t.translation_es.trim());
-    if (validTranslations.length === 0) {
-      setError('Al menos una traducción es obligatoria');
-      return;
-    }
 
     const translationsToSave = validTranslations.map(t => ({
       id: t.id,

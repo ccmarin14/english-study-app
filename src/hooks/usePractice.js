@@ -84,12 +84,14 @@ export function usePractice() {
       progressMap[p.word_id] = p;
     });
 
-    const wordsWithProgress = wordsData.map(word => ({
-      ...word,
-      level: progressMap[word.id]?.level ?? 0,
-      correct_streak: progressMap[word.id]?.correct_streak ?? 0,
-      weight: calcWeight(progressMap[word.id]?.level ?? 0),
-    }));
+    const wordsWithProgress = wordsData
+      .filter(word => word.word_translations?.length > 0)
+      .map(word => ({
+        ...word,
+        level: progressMap[word.id]?.level ?? 0,
+        correct_streak: progressMap[word.id]?.correct_streak ?? 0,
+        weight: calcWeight(progressMap[word.id]?.level ?? 0),
+      }));
 
     setAllWords(wordsWithProgress);
 

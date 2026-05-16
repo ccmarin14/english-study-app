@@ -151,7 +151,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           to="/practice"
           className="bg-indigo-600 text-white rounded-lg p-6 hover:bg-indigo-700 transition-colors"
@@ -163,6 +163,14 @@ export default function Dashboard() {
               {stats.wordsByLevel[0]} palabra{stats.wordsByLevel[0] !== 1 ? 's' : ''} sin practicar
             </p>
           )}
+        </Link>
+
+        <Link
+          to="/add-word"
+          className="bg-amber-600 text-white rounded-lg p-6 hover:bg-amber-700 transition-colors"
+        >
+          <h3 className="text-xl font-semibold">✏️ Añadir palabra</h3>
+          <p className="text-amber-100 mt-2">Agrega una palabra nueva paso a paso</p>
         </Link>
 
         <Link

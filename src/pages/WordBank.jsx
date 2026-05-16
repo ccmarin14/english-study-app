@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useWords } from '../hooks/useWords';
 import { useGroups } from '../hooks/useGroups';
 import { useGroupWords } from '../hooks/useGroupWords';
@@ -20,7 +20,16 @@ export default function WordBank() {
   const [showArchived, setShowArchived] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [draftAlert, setDraftAlert] = useState(location.state?.draftSaved || false);
+
+  useEffect(() => {
+    if (draftAlert) {
+      const timer = setTimeout(() => setDraftAlert(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [draftAlert]);
   const levelFilter = searchParams.get('level');
 
   const filteredWords = useMemo(() => {
@@ -171,6 +180,26 @@ export default function WordBank() {
                 Eliminar
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {draftAlert && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-amber-600 text-lg leading-none mt-0.5">📝</span>
+            <div className="flex-1">
+              <p className="font-medium text-amber-800">Borrador guardado</p>
+              <p className="text-sm text-amber-700 mt-1">
+                Recuerda editar la palabra y añadir sus traducciones para poder practicarla.
+              </p>
+            </div>
+            <button
+              onClick={() => setDraftAlert(false)}
+              className="text-amber-500 hover:text-amber-700 text-lg leading-none"
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}

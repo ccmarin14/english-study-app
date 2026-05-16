@@ -173,7 +173,22 @@
 | :- | :- | :-: |
 | Modal presencial no responde | Selector de conductor y botón iniciar no funcionan | UI no responde correctamente | 🔧 Investigando |
 
-# **F-09 · Exportación a Excel / UX / Dashboard**
+# **F-09 · Palabras incompletas (borradores)**
+
+|**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
+| :- | :- | :-: | :- |
+|**Guardar borrador desde wizard**|En Step 1 del wizard, el botón "Guardar borrador" guarda la palabra solo con word_en (±phonetic), sin traducciones, y redirige al banco|☐ OK  ☐ Falla||
+|**Alerta de borrador guardado**|Al llegar al banco tras guardar un borrador, se muestra alert ámbar "Borrador guardado" con recordatorio. Desaparece a los 5s o al hacer clic en ✕|☐ OK  ☐ Falla||
+|**Palabra incompleta visible en banco**|La palabra aparece en el banco de palabras con badge ámbar "Incompleta", sin nivel, sin progreso, sin traducciones|☐ OK  ☐ Falla||
+|**Palabra incompleta no sale en práctica**|La práctica individual ignora palabras sin traducciones (filtro en el cliente)|☐ OK  ☐ Falla||
+|**Completar borrador desde edición**|Al editar una palabra incompleta, añadir traducción y guardar → la palabra aparece con nivel/progreso en el banco|☐ OK  ☐ Falla||
+|**No aparece en exportación a grupo**|El botón "Exportar al grupo" no se muestra en palabras incompletas|☐ OK  ☐ Falla||
+|**No aparece en archivado**|El botón "Archivar" no se muestra en palabras incompletas|☐ OK  ☐ Falla||
+|**No aparece en exportación Excel**|La exportación a Excel solo incluye palabras con traducciones|☐ OK  ☐ Falla||
+|**No aparece en dashboard**|El dashboard no contabiliza palabras incompletas en totalWords ni en niveles|☐ OK  ☐ Falla||
+|**Editar borrador sin traducciones**|Se puede guardar un borrador editado sin añadir traducciones (sigue siendo incompleto)|☐ OK  ☐ Falla||
+
+# **F-10 · Exportación a Excel / UX / Dashboard**
 
 |**Escenario**|**Resultado esperado**|**Estado**|**Notas**|
 | :- | :- | :-: | :-: |
@@ -198,7 +213,7 @@
 |F-06 · Sesión presencial|15|7 OK + 4 ⚠️|
 |F-07 · Casos borde|9|6 OK + 3 ⚠️|
 |F-08 · Importación Excel|12|12 OK|
-|F-09 · Exportación / UX / Dashboard|8|8 OK|
+|F-10 · Exportación / UX / Dashboard|8|8 OK|
 
 **TOTAL: 72 OK + 10 ⚠️ Parcial = 82/91 funcional (90.1%)**
 
@@ -207,7 +222,7 @@
 **F-02 Completado: 8/8 ✅**
 **F-03 Completado: 10/10 ✅**
 **F-08 Completado: 12/12 ✅**
-**F-09 Completado: 8/8 ✅**
+**F-10 Completado: 8/8 ✅**
 
 ## Datos de prueba creados
 

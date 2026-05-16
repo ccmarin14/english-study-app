@@ -13,6 +13,7 @@ export default function WordCard({ word, onClick, onArchive, onExport, onEdit, s
   const translations = word.word_translations || [];
   const level = word.level;
   const badge = level !== undefined ? LEVEL_BADGES[level] ?? LEVEL_BADGES[0] : null;
+  const isIncomplete = word.status === 'active' && translations.length === 0;
 
   return (
     <div
@@ -22,7 +23,7 @@ export default function WordCard({ word, onClick, onArchive, onExport, onEdit, s
       onClick={onClick}
     >
       <div className="flex items-start gap-3">
-        {badge && showProgress && (
+        {!isIncomplete && badge && showProgress && (
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ring-2 mt-0.5 ${badge.bg} ${badge.text} ${badge.ring}`}
           >
@@ -37,14 +38,14 @@ export default function WordCard({ word, onClick, onArchive, onExport, onEdit, s
                 <p className="text-sm text-gray-500">{word.phonetic}</p>
               )}
             </div>
-            {level !== undefined && showProgress && (
+            {!isIncomplete && level !== undefined && showProgress && (
               <div className="w-24 shrink-0">
                 <ProgressBar level={level} />
               </div>
             )}
           </div>
 
-          {translations.length > 0 && (
+          {!isIncomplete && translations.length > 0 && (
             <div className="mt-3">
               <p className="text-sm text-gray-600">
                 {translations.map(t => t.translation_es).join(', ')}
@@ -53,9 +54,14 @@ export default function WordCard({ word, onClick, onArchive, onExport, onEdit, s
           )}
 
           <div className="mt-3 flex gap-2">
-            {translations.length > 0 && (
+            {!isIncomplete && translations.length > 0 && (
               <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
                 {translations.length} traducción{translations.length !== 1 ? 'es' : ''}
+              </span>
+            )}
+            {isIncomplete && (
+              <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
+                Incompleta
               </span>
             )}
             {word.status === 'archived' && (

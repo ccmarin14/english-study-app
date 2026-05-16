@@ -156,6 +156,29 @@ export default function AddWord() {
     setStep(4);
   };
 
+  const handleSaveDraft = async () => {
+    if (!word.word_en.trim()) {
+      setError('La palabra en inglés es obligatoria');
+      return;
+    }
+
+    setLoading(true);
+
+    const { error: addError } = await addWord({
+      word_en: word.word_en.trim(),
+      phonetic: word.phonetic.trim() || null,
+      translations: [],
+    });
+
+    if (addError) {
+      setError(addError.message);
+      setLoading(false);
+      return;
+    }
+
+    navigate('/word-bank', { state: { draftSaved: true } });
+  };
+
   const handleSubmit = async () => {
     setError('');
 
@@ -488,13 +511,25 @@ export default function AddWord() {
           )}
 
           {step < 4 ? (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-            >
-              Siguiente
-            </button>
+            <div className="flex-1 flex gap-4">
+              {step === 1 && (
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={loading}
+                  className="flex-1 px-6 py-3 border border-amber-400 text-amber-700 rounded-lg hover:bg-amber-50 disabled:opacity-50"
+                >
+                  {loading ? 'Guardando...' : 'Guardar borrador'}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleNext}
+                className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              >
+                Siguiente
+              </button>
+            </div>
           ) : (
             <button
               type="button"

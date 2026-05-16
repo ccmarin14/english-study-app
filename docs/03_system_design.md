@@ -29,7 +29,7 @@ Todas las tablas incluyen RLS. Las claves primarias son UUID generados por Supab
 
 ## **2.2 Banco de palabras personal**
 
-|<p>words</p><p>`  `id               uuid  PK</p><p>`  `word\_en          text  NOT NULL</p><p>`  `phonetic         text</p><p>`  `owner\_id         uuid  FK → profiles.id</p><p>`  `status           text  DEFAULT 'active'   -- active | archived</p><p>`  `created\_at       timestamptz DEFAULT now()</p><p></p><p>word\_translations</p><p>`  `id               uuid  PK</p><p>`  `word\_id          uuid  FK → words.id  ON DELETE CASCADE</p><p>`  `translation\_es   text  NOT NULL</p><p>`  `example\_en       text[]</p><p>`  `example\_es       text[]</p><p>`  `explanation      text</p><p>`  `created\_at       timestamptz DEFAULT now()</p>|
+|<p>words</p><p>`  `id               uuid  PK</p><p>`  `word\_en          text  NOT NULL</p><p>`  `phonetic         text</p><p>`  `owner\_id         uuid  FK → profiles.id</p><p>`  `status           text  DEFAULT 'active'   -- active | archived | incomplete</p><p>`  `created\_at       timestamptz DEFAULT now()</p><p></p><p>word\_translations</p><p>`  `id               uuid  PK</p><p>`  `word\_id          uuid  FK → words.id  ON DELETE CASCADE</p><p>`  `translation\_es   text  NOT NULL</p><p>`  `example\_en       text[]</p><p>`  `example\_es       text[]</p><p>`  `explanation      text</p><p>`  `created\_at       timestamptz DEFAULT now()</p>|
 | :- |
 
 ## **2.3 Banco de frases personal**
@@ -78,22 +78,26 @@ Todas las tablas incluyen RLS. Las claves primarias son UUID generados por Supab
 |<p>PARA CADA palabra practicada en el grupo:</p><p>`  `gwp = group\_word\_progress (nivel y last\_practiced\_at grupal)</p><p>`  `uwp = user\_word\_progress  (nivel y last\_practiced\_at personal)</p><p></p><p>`  `SI gwp.last\_practiced\_at > uwp.last\_practiced\_at:</p><p>`    `uwp.level = gwp.level</p><p>`    `uwp.correct\_streak = gwp.correct\_streak</p><p>`  `SI NO:</p><p>`    `uwp no cambia</p><p></p><p>`  `El grupo NUNCA recibe datos del progreso personal.</p>|
 | :- |
 
-## **3.4 Cambio y abandono de grupo**
+## **3.4 Palabras incompletas (borradores)**
+
+|Comportamiento de las palabras con status = incomplete:<p></p><p>— Se crean desde el botón "Guardar borrador" en el paso 1 del wizard de añadir palabra</p><p>— Solo requieren word_en (phonetic es opcional)</p><p>— No tienen traducciones asociadas</p><p>— Aparecen en el banco de palabras junto con las activas, identificadas con badge "Incompleta"</p><p>— No tienen nivel ni progreso (no existe user_word_progress para ellas)</p><p>— No aparecen en práctica individual (filtro por status = active)</p><p>— No se exportan a grupo (filtro por status = active)</p><p>— No se archivan (filtro por status = active)</p><p>— Al editar y añadir al menos una traducción → status cambia a active automáticamente</p><p>— La exportación a Excel solo incluye palabras activas</p><p>— El dashboard no las contabiliza (cuenta solo status = active)</p>|
+
+## **3.5 Cambio y abandono de grupo**
 
 |<p>SI usuario ya pertenece a grupo A e intenta unirse a grupo B:</p><p>`  `→ Preguntar: '¿Deseas abandonar el grupo A para unirte al grupo B?'</p><p>`  `SI acepta:</p><p>`    `→ Eliminar registro en group\_members para grupo A</p><p>`    `→ Crear registro en group\_members para grupo B</p><p>`    `→ Ejecutar fusión del banco del grupo B (ver 3.5)</p><p>`    `→ Preguntar sincronización de progreso (ver 3.3)</p><p>`  `SI rechaza:</p><p>`    `→ No ocurre ningún cambio</p><p></p><p>Las palabras descargadas del grupo A permanecen en el banco personal</p><p>sin importar si el usuario abandona el grupo.</p>|
 | :- |
 
-## **3.5 Fusión al unirse a un grupo**
+## **3.6 Fusión al unirse a un grupo**
 
 |<p>PARA CADA group\_word en el grupo:</p><p>`  `Buscar coincidencia en words personal por word\_en (case-insensitive)</p><p></p><p>`  `SI no existe → crear word + word\_translations + user\_word\_progress(level=0)</p><p></p><p>`  `SI existe:</p><p>`    `PARA CADA group\_word\_translation:</p><p>`      `Buscar coincidencia por translation\_es (case-insensitive)</p><p>`      `SI no existe → añadir nueva word\_translation</p><p>`      `SI existe:</p><p>`        `SI example\_en del grupo ≠ example\_en personal → conservar ambos</p><p>`          `(se añade nueva word\_translation con mismo translation\_es)</p><p>`        `SI son idénticos → omitir</p><p></p><p>`  `SIEMPRE crear group\_word\_progress(level=0) para el nuevo miembro</p>|
 | :- |
 
-## **3.6 Asignación de roles en sesión grupal**
+## **3.7 Asignación de roles en sesión grupal**
 
 |<p>── MODO REMOTO ──────────────────────────────────────────</p><p>miembros\_activos = lista de miembros del grupo (aleatorizado por turno)</p><p></p><p>Rol A (Elector)      = miembros\_activos[0]</p><p>Rol B (Descubridor)  = quien responda primero correctamente en paso 1</p><p>`                       `NULL si nadie acierta</p><p>candidatos\_constructor = miembros\_activos - Rol A - Rol B - Rol C</p><p></p><p>SI len(miembros) == 3:  Rol D = Rol A</p><p>SI len(miembros) == 4:  Rol D = el único candidato sobrante</p><p>SI len(miembros) >= 5:  Rol D = random.choice(candidatos\_constructor)</p><p></p><p>── MODO PRESENCIAL ──────────────────────────────────────</p><p>asistentes = session\_attendees ordenados por turn\_order</p><p>turn\_start\_index rota por palabra (siguiente al último que intentó)</p><p></p><p>Rol A no existe — el sistema elige la palabra</p><p>Rol B (Descubridor)  = primer asistente en acertar en paso 1</p><p>`                       `NULL si nadie acierta</p><p>candidatos\_constructor = asistentes - Rol B - Rol C</p><p></p><p>SI len(asistentes) == 3:  Rol D = quien no fue B ni C</p><p>SI len(asistentes) == 4:  Rol D = el único candidato sobrante</p><p>SI len(asistentes) >= 5:  Rol D = random.choice(candidatos\_constructor)</p>|
 | :- |
 
-## **3.7 Cierre automático de sesión**
+## **3.8 Cierre automático de sesión**
 
 |<p>Una sesión se cierra cuando:</p><p>`  `a) Se completan los X turnos (todas las palabras)</p><p>`  `b) SOLO REMOTO: han transcurrido 8 horas desde started\_at</p><p></p><p>Al cerrar:</p><p>`  `group\_sessions.status = 'closed'</p><p>`  `group\_sessions.closed\_at = now()</p><p>`  `Se calculan estadísticas para el resumen</p>|
 | :- |

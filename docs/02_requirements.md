@@ -24,11 +24,16 @@
 - Una palabra tiene una o varias traducciones al español ✅
 - Cada traducción tiene: texto en español, frase de ejemplo en inglés, frase de ejemplo en español, y explicación de contexto de uso ✅
 - El usuario puede crear, editar y archivar palabras de su banco ✅
-  - Crear: ✅
+  - Crear (wizard completo): ✅
+  - Guardar borrador (solo palabra en inglés, sin traducción): ✅
+  - Completar palabra desde borrador: ✅ (editar y añadir traducciones → se activa automáticamente)
   - Editar palabra y traducciones: ✅ (página /edit-word)
   - Archivar: ✅
   - Ver archivadas: ✅ (toggle en banco)
   - Restaurar: ✅
+- Las palabras incompletas (borradores) se muestran en el banco con badge "Incompleta" ✅
+- Las palabras incompletas no tienen nivel ni progreso, y no aparecen en práctica ✅
+- Al completar un borrador (añadir traducciones), la palabra se activa automáticamente ✅
 - Al crear una palabra, el usuario puede elegir exportarla a su grupo (si pertenece a uno) ✅
 - El usuario puede exportar todo su banco personal a un archivo .xlsx descargable con el mismo formato que la plantilla de importación ✅
 
@@ -242,7 +247,7 @@ Un solo dispositivo compartido. Un conductor maneja el teclado durante toda la s
 |**P-06**|Sesión grupal remota|Flujo de turnos asíncrono por pasos con resumen final|
 |**P-07**|Sesión grupal presencial|Un dispositivo, panel lateral de turno, conductor registra respuestas|
 |**P-08**|Importar palabras|Subir archivo .xlsx, vista previa de resultados, resumen de importación y descarga de plantilla|
-|**P-09**|Añadir palabra|Wizard paso a paso (4 pasos): palabra, traducción, ejemplos + explicación, revisar y exportar al grupo|
+|**P-09**|Añadir palabra|Wizard paso a paso (4 pasos): palabra, traducción, ejemplos + explicación, revisar y exportar al grupo. Incluye botón "Guardar borrador" en paso 1 para guardar solo la palabra en inglés|
 
 
 English Study Group App  ·  Fase 2: Requirements  ·  v1.0
